@@ -37,7 +37,10 @@ def analyze_url(subpath):
 
     subpath = subpath.split('/')
     if subpath[0] == 'tpe':
-        send_instruction(subpath[1])
+        ip = subpath[1]
+        port = subpath[2]
+        amount = subpath[3]
+        send_instruction(amount, ip, port)
     
     # Perform various functions based on the subpath
     
