@@ -1,16 +1,8 @@
 import socket
 
-TCP_IP = '192.168.1.35'
-TCP_PORT = 5000
 BUFFER_SIZE = 1024
-
-def ask_instruction():
-    print("entrer le montant en centimes Ex : \"750\" (Ctrl-C pour annuler)")
-    cents = input("> ")
-    if not (cents == "quit" or cents == "exit" or cents == "quit()"):
-        send_instruction(cents)
     
-def send_instruction(cents):
+def send_instruction(ipTPE,portTPE,cents):
     decimales = 0
     if type(cents) != str:
         cents = str(cents)
@@ -39,13 +31,13 @@ def send_instruction(cents):
     if cents is not None:
         print("je retiens la valeur suivante: ",cents," centimes d'euros")
         MESSAGE = bytes("00000"+cents+"000978", 'utf-8')
-        print("j'envoie ",MESSAGE.decode("UTF-8"),"sur ",TCP_IP,":",TCP_PORT)
+        print("j'envoie ",MESSAGE.decode("UTF-8"),"sur ",ipTPE,":",portTPE)
         print("en attente de la réponse du terminal")
 
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.settimeout(1)
-            s.connect((TCP_IP, TCP_PORT))
+            s.connect((ipTPE, int(portTPE)))
             s.send(MESSAGE)
             data = s.recv(BUFFER_SIZE)
             s.close()
@@ -57,3 +49,8 @@ def send_instruction(cents):
 
     else:
         print("erreur cents invalide")
+
+if __name__ == "__main__":
+    TCP_IP = '192.168.1.35'
+    TCP_PORT = 5000
+    send_instruction(TCP_IP,TCP_PORT,0)
