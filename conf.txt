@@ -1,0 +1,6 @@
+// Fichier de configuration
+// Ce fichier contient les paramètres de configuration pour le Weda Helper Companion.
+
+
+// Numéro de port pour le serveur
+port = 3000
