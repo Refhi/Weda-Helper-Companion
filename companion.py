@@ -3,6 +3,8 @@
 # allow Weda-Helper to communicate with the TPE and start the printing process
 # version 0.9
 from urllib.parse import urlparse
+import ipaddress
+
 
 try:
     from flask import Flask, request, abort
@@ -53,52 +55,82 @@ def limit_remote_addr():
 def home():
     return ("Bienvenue sur l'API de l'application Companion de Weda-Helper.\n Pour plus d'informations, rendez-vous sur https://github.com/Refhi/Weda-Helper")
 
-@app.route('/print/<primaryd>/<tabsd>/<tabentd>/<entersd>', methods=['GET'])
-def send_to_printer(primaryd, tabsd, tabentd, entersd):
+@app.route('/print', methods=['GET'])
+def send_to_printer():
     # subpath contains the string after the "/"
-    delay_before_print = float(primaryd) # suggested 0.02
-    delay_btw_tabs = float(tabsd) # suggested 0.01
-    delay_btw_tab_and_enter = float(tabentd) # 0.01
-    delay_btw_enters = float(entersd) # 0.5                
-    to_test = [delay_before_print,delay_btw_tabs, delay_btw_tab_and_enter, delay_btw_enters]
-    # check that all delays are between 0.0001 and 10, else exit
-    for delay in to_test:
-        if delay < 0.0001 or delay > 10:
-            return f'Wrong delay asked : {delay}. It should be between 0.0001 and 10'
-    print('delay before print')
-    time.sleep(delay_before_print)
-    print('press tab 9 times')
-    for _ in range(9):
-        print_message_with_timestamp('press tab')
-        keyboard.press(Key.tab)
-        keyboard.release(Key.tab)
-        time.sleep(delay_btw_tabs)
-    time.sleep(delay_btw_tab_and_enter)
-    for _ in range(2):
-        print_message_with_timestamp('press enter')
-        keyboard.press(Key.enter)
-        keyboard.release(Key.enter)
-        time.sleep(delay_btw_enters)
-    return f'Print asked => 9 tab input ant 2 enter input'
+    keyboard.press(Key.enter)
+    keyboard.release(Key.enter)
+    return f'Print asked => j\'appuie une fois sur Entrée'
 
-@app.route('/tpe/<ip>/<port>/<amount>', methods=['GET'])
+@app.route('/tpe/<amount>', methods=['GET'])
 # TODO mettre ip et port dans le fichier de conf
-def send_to_tpe(ip, port, amount):
+def send_to_tpe(amount):
+    ip = app.config['ipTPE']
+    port = app.config['portTPE']
     send_instruction(ip, port, amount)
     return f'TPE asked => {amount} cents @ {ip}:{port}'
 
 @app.route('/<subpath>', methods=['GET'])
 def wrong_url(subpath):    
-    return f'Wrong url asked : {subpath}. it should be /tpe/[ip]/[port]/[amount] or /print'
+    return f'Wrong url asked : {subpath}. it should be /tpe/[amount] or /print'
 
-def get_port_from_conf_file(filename):
+def get_conf_from_file(filename):
+    conf = {}
     with open(filename, 'r') as file:
         for line in file:
-            if line.startswith('port'):
-                return int(line.split('=')[1].strip())
+            if line.startswith('//'):
+                continue
+            key, value = line.split('=')
+            conf[key.strip()] = value.strip()
 
+    if not check_conf(conf):
+        print("Error: Fichier de configuration invalide.")
+        input("Press Enter to continue...")
+        quit()
+    return conf
+
+
+def check_conf(conf):
+    # Vérifie la présence des 3 clés nécessaires
+    required_keys = ['port', 'ipTPE', 'portTPE']
+    for key in required_keys:
+        if key not in conf:
+            print(f"Error: Missing key '{key}' in configuration.")
+            return False
+        
+    # Vérifie qu'il n'y a pas de paramètres en trop
+    if len(conf) > len(required_keys):
+        print("Error: Too many parameters in configuration.")
+        return False
+
+    # Vérifie les ports
+    try:
+        port = int(conf['port'])
+        portTPE = int(conf['portTPE'])
+        if not (1 <= port <= 65535) or not (1 <= portTPE <= 65535):
+            print("Error: Port numbers must be between 1 and 65535.")
+            return False
+    except ValueError:
+        print("Error: Port numbers must be integers.")
+        return False
+
+    # Vérifie l'adresse IP
+    try:
+        ipaddress.ip_address(conf['ipTPE'])
+    except ValueError:
+        print("Error: Invalid IP address.")
+        return False
+
+    return True
 if __name__ == '__main__':
-    # get the port from the conf file
-    port = get_port_from_conf_file('conf.txt')
+    conf = get_conf_from_file('conf.ini')
+    port = int(conf['port'])
+    ipTPE = conf['ipTPE']
+    portTPE = int(conf['portTPE'])
+
+    app.config['ipTPE'] = ipTPE
+    app.config['portTPE'] = portTPE
+
+
     print('Bienvenue sur l\'API de l\'application Companion de Weda-Helper. Pour plus d\'informations, rendez-vous sur https://github.com/Refhi/Weda-Helper')
     app.run(host='localhost', port=port)
