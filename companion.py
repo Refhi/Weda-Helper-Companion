@@ -82,6 +82,7 @@ def send_to_printer(primaryd, tabsd, tabentd, entersd):
     return f'Print asked => 9 tab input ant 2 enter input'
 
 @app.route('/tpe/<ip>/<port>/<amount>', methods=['GET'])
+# TODO mettre ip et port dans le fichier de conf
 def send_to_tpe(ip, port, amount):
     send_instruction(ip, port, amount)
     return f'TPE asked => {amount} cents @ {ip}:{port}'
