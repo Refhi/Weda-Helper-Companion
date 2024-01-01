@@ -1,7 +1,7 @@
 # companion for Weda-Helper
 # author : refhi
 # allow Weda-Helper to communicate with the TPE and start the printing process
-# version 0.9
+# version 0.10
 from urllib.parse import urlparse
 import ipaddress
 
@@ -63,7 +63,6 @@ def send_to_printer():
     return f'Print asked => j\'appuie une fois sur Entrée'
 
 @app.route('/tpe/<amount>', methods=['GET'])
-# TODO mettre ip et port dans le fichier de conf
 def send_to_tpe(amount):
     ip = app.config['ipTPE']
     port = app.config['portTPE']
