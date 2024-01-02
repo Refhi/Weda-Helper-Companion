@@ -4,6 +4,7 @@
 # version 0.10
 from urllib.parse import urlparse
 import ipaddress
+import os
 
 
 try:
@@ -133,7 +134,37 @@ def limit_remote_addr():
     if 'apiKey' not in request.args or request.args.get('apiKey') != app.config['apiKey']:
         abort(403)
 
+defaut_conf = """// Fichier de configuration
+// Ce fichier contient les paramètres de configuration pour le Weda Helper Companion.
+
+
+// Numéro de port pour le serveur
+port = 3000
+
+// Adresse IP du TPE
+ipTPE = 192.168.1.35
+portTPE = 5000
+
+// clé API
+apiKey = azelkmlsdfpoiert1234"""
+
 if __name__ == '__main__':
+    # check if conf.ini exists, if not create it with default values
+    try:
+        with open('conf.ini', 'r') as file:
+            pass
+    except FileNotFoundError:
+        with open('conf.ini', 'w') as file:
+            file.write(defaut_conf)
+            print('Fichier de configuration créé avec succès. Veuillez le remplir avec les paramètres nécessaires.')
+        path = os.path.realpath('conf.ini')
+        input(f"""l'éditeur devrait s'ouvrir automatiquement.
+                Si ce n'est pas le cas, ouvrez le fichier conf.ini avec un éditeur de texte et remplissez les paramètres nécessaires.
+                Le fichier est situé dans {path}
+                Appuyez sur Entrée pour continuer...""")
+        os.system(f'start notepad {path}')
+        input("Press Enter to continue...")
+        quit()
     conf = get_conf_from_file('conf.ini')
     port = int(conf['port'])
     ipTPE = conf['ipTPE']
