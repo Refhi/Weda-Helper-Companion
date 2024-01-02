@@ -39,7 +39,7 @@ def print_message_with_timestamp(message):
     print(f"[{timestamp}] {message}")
 
 app = Flask(__name__)
-CORS(app, origins=['chrome-extension://fnfdbangkcmjacbeaaiongkbacaamnfd','https://secure.weda.fr'])
+CORS(app, origins=['chrome-extension://dbdodecalholckdneehnejnipbgalami','https://secure.weda.fr'])
 try:
     keyboard = Controller()
 except NameError:
@@ -79,8 +79,12 @@ def get_conf_from_file(filename):
         for line in file:
             if line.startswith('//'):
                 continue
-            key, value = line.split('=')
-            conf[key.strip()] = value.strip()
+            # check if the line include a '='
+            if '=' in line:
+                key, value = line.split('=')
+                conf[key.strip()] = value.strip()
+            else:
+                continue
 
     if not check_conf(conf):
         print("Error: Fichier de configuration invalide.")
@@ -90,8 +94,8 @@ def get_conf_from_file(filename):
 
 
 def check_conf(conf):
-    # Vérifie la présence des 3 clés nécessaires
-    required_keys = ['port', 'ipTPE', 'portTPE']
+    # Vérifie la présence des 4 clés nécessaires
+    required_keys = ['port', 'ipTPE', 'portTPE', 'apiKey']
     for key in required_keys:
         if key not in conf:
             print(f"Error: Missing key '{key}' in configuration.")
@@ -121,15 +125,24 @@ def check_conf(conf):
         return False
 
     return True
+
+@app.before_request
+def limit_remote_addr():
+    if request.remote_addr != '127.0.0.1':
+        abort(403)
+    if 'apiKey' not in request.args or request.args.get('apiKey') != app.config['apiKey']:
+        abort(403)
+
 if __name__ == '__main__':
     conf = get_conf_from_file('conf.ini')
     port = int(conf['port'])
     ipTPE = conf['ipTPE']
     portTPE = int(conf['portTPE'])
+    apiKey = conf['apiKey']
 
     app.config['ipTPE'] = ipTPE
     app.config['portTPE'] = portTPE
-
+    app.config['apiKey'] = apiKey
 
     print('Bienvenue sur l\'API de l\'application Companion de Weda-Helper. Pour plus d\'informations, rendez-vous sur https://github.com/Refhi/Weda-Helper')
     app.run(host='localhost', port=port)
