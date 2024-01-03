@@ -1,12 +1,12 @@
 # companion for Weda-Helper
 # author : refhi
 # allow Weda-Helper to communicate with the TPE and start the printing process
-# version 0.10
+# version 1.0
 from urllib.parse import urlparse
 import ipaddress
 import os
-import json
-import inputimeout
+
+
 
 try:
     from flask import Flask, request, abort
@@ -75,28 +75,29 @@ def send_to_tpe(amount):
 def wrong_url(subpath):    
     return f'Wrong url asked : {subpath}. it should be /tpe/[amount] or /print'
 
+def get_conf_from_file(filename):
+    conf = {}
+    with open(filename, 'r') as file:
+        for line in file:
+            if line.startswith('//'):
+                continue
+            # check if the line include a '='
+            if '=' in line:
+                key, value = line.split('=')
+                conf[key.strip()] = value.strip()
+            else:
+                continue
 
+    if not check_conf(conf):
+        print("Error: Fichier de configuration invalide.")
+        input("Press Enter to continue...")
+        quit()
+    return conf
 
-
-@app.before_request
-def limit_remote_addr():
-    if request.remote_addr != '127.0.0.1':
-        abort(403)
-    if 'apiKey' not in request.args or request.args.get('apiKey') != app.config['apiKey']:
-        abort(403)
-
-defaut_config = {
-            "server_port": 3000,
-            "tpe_ip": "192.168.0.0",
-            "tpe_port": 5000,
-            "api_key": ""
-    }
-
-config_file = "conf.json"
 
 def check_conf(conf):
     # Vérifie la présence des 4 clés nécessaires
-    required_keys = ['server_port', 'tpe_ip', 'tpe_port', 'api_key']
+    required_keys = ['port', 'ipTPE', 'portTPE', 'apiKey']
     for key in required_keys:
         if key not in conf:
             print(f"Error: Missing key '{key}' in configuration.")
@@ -109,8 +110,8 @@ def check_conf(conf):
 
     # Vérifie les ports
     try:
-        port = int(conf['server_port'])
-        portTPE = int(conf['tpe_port'])
+        port = int(conf['port'])
+        portTPE = int(conf['portTPE'])
         if not (1 <= port <= 65535) or not (1 <= portTPE <= 65535):
             print("Error: Port numbers must be between 1 and 65535.")
             return False
@@ -120,63 +121,65 @@ def check_conf(conf):
 
     # Vérifie l'adresse IP
     try:
-        ipaddress.ip_address(conf['tpe_ip'])
+        ipaddress.ip_address(conf['ipTPE'])
     except ValueError:
         print("Error: Invalid IP address.")
         return False
 
     return True
 
-def get_conf_from_file(filename):
-    with open(filename, 'r') as file:
-        conf = json.load(file)
-    return conf
+@app.before_request
+def limit_remote_addr():
+    if request.remote_addr != '127.0.0.1':
+        abort(403)
+    if 'apiKey' not in request.args or request.args.get('apiKey') != app.config['apiKey']:
+        abort(403)
 
-def user_change_conf(conf, defaut_config):
-    print('Veuillez entrer les paramètres de configuration de l\'API. "Entrée" pour garder la valeur actuelle.')
-    for key in conf:
-        new_value = input(f'{key} (Actuellement : {conf[key]}, Par default: {defaut_config[key]}): ')
-        if new_value != '':
-            conf[key] = new_value
-        else:
-            print(f'{key} = {conf[key]}')
-    
-    if check_conf(conf):
-        with open(config_file, 'w') as file:
-            json.dump(conf, file, indent=4)
-        print('La configuration a été sauvegardée.')
-        return conf
-    else:
-        print('La configuration est invalide, veuillez recommencer.')
-        user_change_conf(conf, defaut_config)
+defaut_conf = """// Fichier de configuration
+// Ce fichier contient les paramètres de configuration pour le Weda Helper Companion.
 
-from inputimeout import inputimeout, TimeoutOccurred
 
-def wait_for_input_or_timeout(conf, defaut_config, timeout=10):
-    try:
-        print(f'la configuration actuelle est : {conf}')
-        user_input = inputimeout(prompt=f'Appuyez sur "Entrée" pour continuer, ou "e" + "Entrée" pour éditer la configuration. Sinon je démarre dans {timeout} secondes. \n', timeout=timeout)
-        if user_input.lower() == 'e':
-            user_change_conf(conf, defaut_config)
-    except TimeoutOccurred:
-        print('Je démarre sur le fichier de conf existant.')
+// Numéro de port pour le serveur
+port = 3000
+
+// Adresse IP du TPE
+ipTPE = 192.168.1.35
+portTPE = 5000
+
+// clé API
+apiKey = azelkmlsdfpoiert1234"""
 
 if __name__ == '__main__':
+    # check if conf.ini exists, if not create it with default values
     try:
-        conf = get_conf_from_file(config_file)
+        with open('conf.ini', 'r') as file:
+            pass
     except FileNotFoundError:
-        conf = defaut_config
-        conf = user_change_conf(conf, defaut_config)
+        with open('conf.ini', 'w') as file:
+            file.write(defaut_conf)
+            print('''Bienvenue dans le companion Weda-Helper.
+Un fichier de configuration vient d'être créé avec succès.
+''')
+        path = os.path.realpath('conf.ini')
+        input(f"""l'éditeur devrait s'ouvrir automatiquement.
+En général le port 3000 est adapté, mais en cas de difficulté, n'hésitez pas à le modifier (ex. 4561 ou 7320)
+Ce port est également à modifier dans les options de l'extension chrome
+Si ce n'est pas le cas, ouvrez le fichier conf.ini avec un éditeur de texte et remplissez les paramètres nécessaires.
+Le fichier est situé dans {path}
+Appuyez sur Entrée pour continuer...""")
+        os.system(f'start notepad {path}')
+        input("Quand vous avez fini, Appuyez sur Entrée pour continuer...")
+    conf = get_conf_from_file('conf.ini')
     if not check_conf(conf):
-        print('La configuration est invalide, veuillez recommencer.')
-        conf = user_change_conf(conf, defaut_config)
-
-    wait_for_input_or_timeout(conf, defaut_config, 5)
-
-    port = int(conf['server_port'])
-    ipTPE = conf['tpe_ip']
-    portTPE = int(conf['tpe_port'])
-    apiKey = conf['api_key']
+        print("Error: Fichier de configuration invalide.")
+        path = os.path.realpath('conf.ini')
+        print(f"Le fichier est situé dans {path}, merci de le vérifier. Pour le remettre à zéro, supprimez-le puis relancez l'application.")
+        input("Appuyez sur Entrée pour quitter...")
+        quit()
+    port = int(conf['port'])
+    ipTPE = conf['ipTPE']
+    portTPE = int(conf['portTPE'])
+    apiKey = conf['apiKey']
 
     app.config['ipTPE'] = ipTPE
     app.config['portTPE'] = portTPE
