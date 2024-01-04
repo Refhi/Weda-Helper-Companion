@@ -8,7 +8,7 @@ import os
 
 import tempfile # nécessaire pour l'impression
 import subprocess # nécessaire pour l'impression sous linux
-
+import threading 
 
 
 
@@ -44,6 +44,13 @@ def print_message_with_timestamp(message):
 
     print(f"[{timestamp}] {message}")
 
+
+
+def remove_file_after_delay(filename, delay):
+    time.sleep(delay)
+    os.remove(filename)
+
+
 app = Flask(__name__)
 CORS(app, origins=['chrome-extension://dbdodecalholckdneehnejnipbgalami','https://secure.weda.fr'])
 try:
@@ -75,13 +82,17 @@ def send_to_printer():
 
     # Imprimer le fichier
     if os.name == 'nt':  # Si le système d'exploitation est Windows
-        os.startfile(temp_file_name, "print")
+        try:
+            os.startfile(temp_file_name, "print")
+        except:
+            errormessage = "Erreur lors de l'impression du fichier PDF. Vérifiez que vous avez bien un logiciel d'impression PDF par défaut (Recommandé = Acrobat Reader)."
+            print(errormessage)
+            return jsonify({'error': errormessage}), 500
     else:  # Pour les autres systèmes d'exploitation (Linux, MacOS)
         subprocess.run(["lpr", temp_file_name])
 
-    # Supprimer le fichier temporaire
-    os.remove(temp_file_name)
-
+    # Supprimer le fichier temporaire après 60 secondes
+    threading.Thread(target=remove_file_after_delay, args=(temp_file_name, 20)).start()
     return jsonify({'info':'Impression demandée pour le fichier PDF'}), 200
 
 @app.route('/tpe/<amount>', methods=['GET'])
@@ -172,14 +183,15 @@ defaut_conf = """// Fichier de configuration
 // Ce fichier contient les paramètres de configuration pour le Weda Helper Companion.
 // L'executable est téléchargeable sur https://github.com/Refhi/Weda-Helper-Companion/releases/latest/download/companion.exe
 
-// Numéro de port pour le serveur
+// Numéro de port pour le serveur (en général 3000 est ok, mais n'hésitez pas à le changer si ça ne fonctionne pas)
 port = 3000
 
-// Adresse IP du TPE
+// Adresse IP du TPE (à récupérer auprès de votre installateur de TPE.
+// Demandez-leur d'activer la connexion avec un appareil et de préciser le port et l'adresse IP)
 ipTPE = 192.168.1.35
 portTPE = 5000
 
-// clé API
+// clé API (à récupérer dans les options de l'extension)
 apiKey = tobechanged"""
 
 if __name__ == '__main__':
@@ -191,14 +203,17 @@ if __name__ == '__main__':
         with open('conf.ini', 'w') as file:
             file.write(defaut_conf)
             print('''Bienvenue dans le companion Weda-Helper.
+                  
 Un fichier de configuration vient d'être créé avec succès.
 ''')
         path = os.path.realpath('conf.ini')
-        input(f"""l'éditeur devrait s'ouvrir automatiquement.
-En général le port 3000 est adapté, mais en cas de difficulté, n'hésitez pas à le modifier (ex. 4561 ou 7320)
-Ce port est également à modifier dans les options de l'extension chrome
-Si ce n'est pas le cas, ouvrez le fichier conf.ini avec un éditeur de texte et remplissez les paramètres nécessaires.
-Le fichier est situé dans {path}
+        input(f"""Afin de préparer la configuration, un éditeur devrait s'ouvrir automatiquement.
+Suivez les instructions dans le fichier puis sauvegardez-le, fermez-le et revenez ici.
+
+En cas de difficulté, vous pourrez éditer manuellement le fichier conf.ini que vous trouverez ici :
+{path}
+Il suffit de l'éditer avec le bloc-note de Windows ou un éditeur de texte et de le sauvegarder.
+
 Appuyez sur Entrée pour continuer...""")
         os.system(f'start notepad {path}')
         input("Quand vous avez fini, Appuyez sur Entrée pour continuer...")
