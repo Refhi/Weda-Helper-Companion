@@ -1,7 +1,7 @@
 # companion for Weda-Helper
 # author : refhi
 # allow Weda-Helper to communicate with the TPE and start the printing process
-# version 1.0
+version = '1.0.1'
 from urllib.parse import urlparse
 import ipaddress
 import os
@@ -9,7 +9,7 @@ import os
 
 
 try:
-    from flask import Flask, request, abort
+    from flask import Flask, request, abort, jsonify
     from flask_cors import CORS
 
 except ImportError:
@@ -73,7 +73,7 @@ def send_to_tpe(amount):
 
 @app.route('/<subpath>', methods=['GET'])
 def wrong_url(subpath):    
-    return f'Wrong url asked : {subpath}. it should be /tpe/[amount] or /print'
+    return f'Wrong url asked : {subpath}. it should be /tpe/[amount] or /print suivi de ?apiKey=[apiKey]&versioncheck=[version]'
 
 def get_conf_from_file(filename):
     conf = {}
@@ -125,6 +125,11 @@ def check_conf(conf):
     except ValueError:
         print("Error: Invalid IP address.")
         return False
+    
+    # Vérifie que la clé API n'est pas celle par défaut
+    if conf['apiKey'] == 'tobechanged':
+        print("Erreur: la clé API key ne doit pas rester à sa valeur par défaut. Vérifiez dans les options de Weda-Helper et dans le fichier conf.ini")
+        return False
 
     return True
 
@@ -133,7 +138,15 @@ def limit_remote_addr():
     if request.remote_addr != '127.0.0.1':
         abort(403)
     if 'apiKey' not in request.args or request.args.get('apiKey') != app.config['apiKey']:
-        abort(403)
+        abort(jsonify({
+            'error': f'Clé API non fournie ou non conforme. Elle doit être notée dans le fichier conf.ini et dans les options de l\'extension Chrome',
+            }), 403)    
+    if 'versioncheck' not in request.args or request.args.get('versioncheck') != version:
+        version_demandee = request.args.get('versioncheck')
+        # abort(403)
+        abort(jsonify({
+            'error': f'version du Companion {version} incompatible avec la version demandée {version_demandee}. Veuillez mettre à jour Weda-Helper-Companion en téléchargant la dernière version sur https://github.com/Refhi/Weda-Helper-Companion/blob/fc1be08104df50721a9a3b3b7cadfe97db745f53/dist/companion.exe puis cliquez sur la ⬇️ (download raw file)',
+            }), 403)
 
 defaut_conf = """// Fichier de configuration
 // Ce fichier contient les paramètres de configuration pour le Weda Helper Companion.
@@ -147,7 +160,7 @@ ipTPE = 192.168.1.35
 portTPE = 5000
 
 // clé API
-apiKey = azelkmlsdfpoiert1234"""
+apiKey = tobechanged"""
 
 if __name__ == '__main__':
     # check if conf.ini exists, if not create it with default values

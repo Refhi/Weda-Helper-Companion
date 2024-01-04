@@ -2,6 +2,9 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [1.0.1] - 2024-01-04
+- ajout d'un contrôle de version
+
 ## [1.0] - 2024-01-02
 - ajout de la nécessité d'une clé API
 
