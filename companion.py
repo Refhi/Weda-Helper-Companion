@@ -1,10 +1,14 @@
 # companion for Weda-Helper
 # author : refhi
 # allow Weda-Helper to communicate with the TPE and start the printing process
-version = '1.0.1'
+version = '1.1'
 from urllib.parse import urlparse
 import ipaddress
 import os
+
+import tempfile # nécessaire pour l'impression
+import subprocess # nécessaire pour l'impression sous linux
+
 
 
 
@@ -57,23 +61,39 @@ def limit_remote_addr():
 def home():
     return ("Bienvenue sur l'API de l'application Companion de Weda-Helper.\n Pour plus d'informations, rendez-vous sur https://github.com/Refhi/Weda-Helper")
 
-@app.route('/print', methods=['GET'])
+@app.route('/print', methods=['POST'])
 def send_to_printer():
-    # subpath contains the string after the "/"
-    keyboard.press(Key.enter)
-    keyboard.release(Key.enter)
-    return f'Print asked => j\'appuie une fois sur Entrée'
+    if 'application/pdf' not in request.headers.get('Content-Type', ''):
+        return jsonify({'error': 'Invalid Content-Type, expected application/pdf'}), 400
+
+    pdf_data = request.data
+
+    # Enregistrer le fichier PDF dans un fichier temporaire
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp:
+        temp.write(pdf_data)
+        temp_file_name = temp.name
+
+    # Imprimer le fichier
+    if os.name == 'nt':  # Si le système d'exploitation est Windows
+        os.startfile(temp_file_name, "print")
+    else:  # Pour les autres systèmes d'exploitation (Linux, MacOS)
+        subprocess.run(["lpr", temp_file_name])
+
+    # Supprimer le fichier temporaire
+    os.remove(temp_file_name)
+
+    return jsonify({'info':'Impression demandée pour le fichier PDF'}), 200
 
 @app.route('/tpe/<amount>', methods=['GET'])
 def send_to_tpe(amount):
     ip = app.config['ipTPE']
     port = app.config['portTPE']
     send_instruction(ip, port, amount)
-    return f'TPE asked => {amount} cents @ {ip}:{port}'
+    return jsonify({'info': f'TPE asked => {amount} cents @ {ip}:{port}'}), 200
 
 @app.route('/<subpath>', methods=['GET'])
 def wrong_url(subpath):    
-    return f'Wrong url asked : {subpath}. it should be /tpe/[amount] or /print suivi de ?apiKey=[apiKey]&versioncheck=[version]'
+    return jsonify({'error': f'Wrong url asked : {subpath}. it should be /tpe/[amount] or /print suivi de ?apiKey=[apiKey]&versioncheck=[version]'}), 404
 
 def get_conf_from_file(filename):
     conf = {}
@@ -145,12 +165,12 @@ def limit_remote_addr():
         version_demandee = request.args.get('versioncheck')
         # abort(403)
         abort(jsonify({
-            'error': f'version du Companion {version} incompatible avec la version demandée {version_demandee}. Veuillez mettre à jour Weda-Helper-Companion en téléchargant la dernière version sur https://github.com/Refhi/Weda-Helper-Companion/blob/fc1be08104df50721a9a3b3b7cadfe97db745f53/dist/companion.exe puis cliquez sur la ⬇️ (download raw file)',
+            'error': f'version du Companion {version} incompatible avec la version demandée {version_demandee}. Veuillez mettre à jour Weda-Helper-Companion en téléchargant la dernière version sur https://github.com/Refhi/Weda-Helper-Companion/releases/latest/download/companion.exe',
             }), 403)
 
 defaut_conf = """// Fichier de configuration
 // Ce fichier contient les paramètres de configuration pour le Weda Helper Companion.
-
+// L'executable est téléchargeable sur https://github.com/Refhi/Weda-Helper-Companion/releases/latest/download/companion.exe
 
 // Numéro de port pour le serveur
 port = 3000
