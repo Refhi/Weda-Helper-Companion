@@ -1,8 +1,7 @@
 # companion for Weda-Helper
 # author : refhi
 # allow Weda-Helper to communicate with the TPE and start the printing process
-# version 1.2
-version = '1.1' # version de l'API
+version = '1.1'
 from urllib.parse import urlparse
 import ipaddress
 import os
@@ -84,22 +83,11 @@ def send_to_printer():
     # Imprimer le fichier
     if os.name == 'nt':  # Si le système d'exploitation est Windows
         try:
-            if app.config['print_method'] == "default":
-                os.startfile(temp_file_name, "print")
-            elif app.config['print_method'] == "ghostscript":
-                if app.config['printer'] == "Default":
-                    import win32print
-                    printer_name = win32print.GetDefaultPrinter()
-                else:
-                    printer_name = app.config['printer']
-                # convertir le pdf en fichier postscript
-                subprocess.run(["gswin64c", "-dNOPAUSE", "-dBATCH", "-sDEVICE=mswinpr2", "-sOutputFile=%printer%WEDA-Printer", temp_file_name])
+            os.startfile(temp_file_name, "print")
         except:
             errormessage = "Erreur lors de l'impression du fichier PDF. Vérifiez que vous avez bien un logiciel d'impression PDF par défaut (Recommandé = Acrobat Reader)."
             print(errormessage)
             return jsonify({'error': errormessage}), 500
-
-
     else:  # Pour les autres systèmes d'exploitation (Linux, MacOS)
         subprocess.run(["lpr", temp_file_name])
 
@@ -140,7 +128,7 @@ def get_conf_from_file(filename):
 
 def check_conf(conf):
     # Vérifie la présence des 4 clés nécessaires
-    required_keys = ['port', 'ipTPE', 'portTPE', 'apiKey', 'print_method', 'printer']
+    required_keys = ['port', 'ipTPE', 'portTPE', 'apiKey']
     for key in required_keys:
         if key not in conf:
             print(f"Error: Missing key '{key}' in configuration.")
@@ -174,12 +162,6 @@ def check_conf(conf):
         print("Erreur: la clé API key ne doit pas rester à sa valeur par défaut. Vérifiez dans les options de Weda-Helper et dans le fichier conf.ini")
         return False
 
-    # vérifie que la méthode d'impression est valide
-    if conf['print_method'] not in ['default', 'ghostscript']:
-        print("Erreur: la méthode d'impression doit être 'default' ou 'ghostscript'")
-        return False
-    
-
     return True
 
 @app.before_request
@@ -209,19 +191,8 @@ port = 3000
 ipTPE = 192.168.1.35
 portTPE = 5000
 
-// clé API
-apiKey = tobechanged
-
-// Méthode d'impression sous windows. Accepte les arguments suivants :
-// - default : utilise le programme par défaut pour imprimer les fichiers PDF. Il est recommandé de mettre acrobat reader par défaut.
-// - ghostscript : passe par ghostscript pour imprimer directement sur l'imprimante par défaut.
-//                 nécessite d'installer ghostscript sur la machine par exemple via https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs10021/gs10021w64.exe
-print_method = default
-
-// Nom de l'imprimante à utiliser sous windows. Nécessaire si print_method = ghostscript. Mettre à Default pour utiliser l'imprimante par défaut.
-printer = Default
-
-"""
+// clé API (à récupérer dans les options de l'extension)
+apiKey = tobechanged"""
 
 if __name__ == '__main__':
     # check if conf.ini exists, if not create it with default values
@@ -261,9 +232,6 @@ Appuyez sur Entrée pour continuer...""")
     app.config['ipTPE'] = ipTPE
     app.config['portTPE'] = portTPE
     app.config['apiKey'] = apiKey
-    app.config['print_method'] = conf['print_method']
-    app.config['printer'] = conf['printer']
-
 
     print('Bienvenue sur l\'API de l\'application Companion de Weda-Helper. Pour plus d\'informations, rendez-vous sur https://github.com/Refhi/Weda-Helper')
     app.run(host='localhost', port=port)
