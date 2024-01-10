@@ -10,6 +10,8 @@ import tempfile # nécessaire pour l'impression
 import subprocess # nécessaire pour l'impression sous linux
 import threading 
 
+# import win32gui # nécessaire si besoin de travailler sur le vol de focus d'adobe reader
+
 
 
 try:
@@ -48,7 +50,10 @@ def print_message_with_timestamp(message):
 
 def remove_file_after_delay(filename, delay):
     time.sleep(delay)
-    os.remove(filename)
+    try:
+        os.remove(filename)
+    except Exception as e:
+        print(f"Erreur: Je n'ai pas pu supprimer le fichier temporaire (un programme est-il en train de l'utiliser ?) '{filename}': {e}")
 
 
 app = Flask(__name__)
@@ -83,10 +88,17 @@ def send_to_printer():
     # Imprimer le fichier
     if os.name == 'nt':  # Si le système d'exploitation est Windows
         try:
+            #pb de vol de focus, cf.     # voir https://stackoverflow.com/questions/6312627/windows-7-how-to-bring-a-window-to-the-front-no-matter-what-other-window-has-fo/6324105#6324105
+
+            # window_to_keep_focus_on = win32gui.GetForegroundWindow()
+            # print(f'window_to_keep_focus_on = {window_to_keep_focus_on}')
             os.startfile(temp_file_name, "print")
-        except:
+            # time.sleep(3) # TODO : trouver une meilleure solution que 
+            # print(f'je demande à récupérer le focus sur la fenêtre {window_to_keep_focus_on}')
+            # # win32gui.SetForegroundWindow(window_to_keep_focus_on)
+        except Exception as e:
             errormessage = "Erreur lors de l'impression du fichier PDF. Vérifiez que vous avez bien un logiciel d'impression PDF par défaut (Recommandé = Acrobat Reader)."
-            print(errormessage)
+            print(errormessage, e)
             return jsonify({'error': errormessage}), 500
     else:  # Pour les autres systèmes d'exploitation (Linux, MacOS)
         subprocess.run(["lpr", temp_file_name])
@@ -94,6 +106,7 @@ def send_to_printer():
     # Supprimer le fichier temporaire après 60 secondes
     threading.Thread(target=remove_file_after_delay, args=(temp_file_name, 20)).start()
     return jsonify({'info':'Impression demandée pour le fichier PDF'}), 200
+
 
 @app.route('/tpe/<amount>', methods=['GET'])
 def send_to_tpe(amount):
@@ -164,11 +177,7 @@ def check_conf(conf):
 
     return True
 
-def focustochrome():
-    # voir https://stackoverflow.com/questions/6312627/windows-7-how-to-bring-a-window-to-the-front-no-matter-what-other-window-has-fo/6324105#6324105
-    # ?
-    import win32gui
-    pass
+
 
 @app.before_request
 def limit_remote_addr():
