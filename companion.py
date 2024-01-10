@@ -164,6 +164,12 @@ def check_conf(conf):
 
     return True
 
+def focustochrome():
+    # voir https://stackoverflow.com/questions/6312627/windows-7-how-to-bring-a-window-to-the-front-no-matter-what-other-window-has-fo/6324105#6324105
+    # ?
+    import win32gui
+    pass
+
 @app.before_request
 def limit_remote_addr():
     if request.remote_addr != '127.0.0.1':
