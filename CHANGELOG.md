@@ -2,8 +2,10 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
-## [1.2] - 2024-01-06
-- ajout d'un paramètre pour imprimer en direct via ghostscript si ce dernier est installé sur la machine
+
+
+## [1.1.1] - 2024-01-10
+- changement du port par défaut vers 4821 (en théorie moins utilisé que le 3000)
 
 ## [1.1] - 2024-01-04
 - ajout d'un permalien pour l'exe

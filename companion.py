@@ -199,7 +199,7 @@ defaut_conf = """// Fichier de configuration
 // L'executable est téléchargeable sur https://github.com/Refhi/Weda-Helper-Companion/releases/latest/download/companion.exe
 
 // Numéro de port pour le serveur (en général 3000 est ok, mais n'hésitez pas à le changer si ça ne fonctionne pas)
-port = 3000
+port = 4821
 
 // Adresse IP du TPE (à récupérer auprès de votre installateur de TPE.
 // Demandez-leur d'activer la connexion avec un appareil et de préciser le port et l'adresse IP)
