@@ -71,7 +71,7 @@ def limit_remote_addr():
 
 @app.route('/', methods=['GET'])
 def home():
-    return ("Bienvenue sur l'API de l'application Companion de Weda-Helper.\n Pour plus d'informations, rendez-vous sur https://github.com/Refhi/Weda-Helper")
+    return (f"Bienvenue sur l'API de l'application Companion de Weda-Helper.\n Pour plus d'informations, rendez-vous sur https://github.com/Refhi/Weda-Helper \n version {version}")
 
 @app.route('/focus', methods=['GET'])
 def get_focus_back():
@@ -256,5 +256,7 @@ Appuyez sur Entrée pour continuer...""")
     app.config['portTPE'] = portTPE
     app.config['apiKey'] = apiKey
 
-    print('Bienvenue sur l\'API de l\'application Companion de Weda-Helper. Pour plus d\'informations, rendez-vous sur https://github.com/Refhi/Weda-Helper')
+    print(f'''Bienvenue sur l\'API de l\'application Companion de Weda-Helper.
+Pour plus d\'informations, rendez-vous sur https://github.com/Refhi/Weda-Helper
+Version {version}''')
     app.run(host='localhost', port=port)
