@@ -98,7 +98,7 @@ def send_to_printer():
             #pb de vol de focus, cf. https://stackoverflow.com/questions/6312627/windows-7-how-to-bring-a-window-to-the-front-no-matter-what-other-window-has-fo/6324105#6324105
             app.config["weda_handle"] = win32gui.GetForegroundWindow()
             print(f'weda_handle = {app.config["weda_handle"]}')
-            # os.startfile(temp_file_name, "print")
+            os.startfile(temp_file_name, "print")
         except Exception as e:
             errormessage = "Erreur lors de l'impression du fichier PDF. Vérifiez que vous avez bien un logiciel d'impression PDF par défaut (Recommandé = Acrobat Reader)."
             print(errormessage, e)
