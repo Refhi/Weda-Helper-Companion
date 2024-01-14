@@ -1,7 +1,7 @@
 # companion for Weda-Helper
 # author : refhi
 # allow Weda-Helper to communicate with the TPE and start the printing process
-version = '1.1'
+version = '1.2'
 from urllib.parse import urlparse
 import ipaddress
 import os
@@ -10,7 +10,7 @@ import tempfile # nécessaire pour l'impression
 import subprocess # nécessaire pour l'impression sous linux
 import threading 
 
-# import win32gui # nécessaire si besoin de travailler sur le vol de focus d'adobe reader
+import win32gui # nécessaire si besoin de travailler sur le vol de focus d'adobe reader
 
 
 
@@ -73,6 +73,11 @@ def limit_remote_addr():
 def home():
     return ("Bienvenue sur l'API de l'application Companion de Weda-Helper.\n Pour plus d'informations, rendez-vous sur https://github.com/Refhi/Weda-Helper")
 
+@app.route('/focus', methods=['GET'])
+def get_focus_back():
+    print('je demande à récupérer le focus sur la fenêtre de Weda')
+    win32gui.SetForegroundWindow(app.config["weda_handle"])
+
 @app.route('/print', methods=['POST'])
 def send_to_printer():
     if 'application/pdf' not in request.headers.get('Content-Type', ''):
@@ -88,14 +93,10 @@ def send_to_printer():
     # Imprimer le fichier
     if os.name == 'nt':  # Si le système d'exploitation est Windows
         try:
-            #pb de vol de focus, cf.     # voir https://stackoverflow.com/questions/6312627/windows-7-how-to-bring-a-window-to-the-front-no-matter-what-other-window-has-fo/6324105#6324105
-
-            # window_to_keep_focus_on = win32gui.GetForegroundWindow()
-            # print(f'window_to_keep_focus_on = {window_to_keep_focus_on}')
+            #pb de vol de focus, cf. https://stackoverflow.com/questions/6312627/windows-7-how-to-bring-a-window-to-the-front-no-matter-what-other-window-has-fo/6324105#6324105
+            app.config["weda_handle"] = win32gui.GetForegroundWindow()
+            print(f'weda_handle = {app.config["weda_handle"]}')
             os.startfile(temp_file_name, "print")
-            # time.sleep(3) # TODO : trouver une meilleure solution que 
-            # print(f'je demande à récupérer le focus sur la fenêtre {window_to_keep_focus_on}')
-            # # win32gui.SetForegroundWindow(window_to_keep_focus_on)
         except Exception as e:
             errormessage = "Erreur lors de l'impression du fichier PDF. Vérifiez que vous avez bien un logiciel d'impression PDF par défaut (Recommandé = Acrobat Reader)."
             print(errormessage, e)
