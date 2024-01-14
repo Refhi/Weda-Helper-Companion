@@ -2,7 +2,8 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
-
+## [1.2] - 2024-01-14
+- ajout d'une capacité de récupération du focus lorsque ce dernier est volé par l'application d'impression
 
 ## [1.1.1] - 2024-01-10
 - changement du port par défaut vers 4821 (en théorie moins utilisé que le 3000)
