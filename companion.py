@@ -76,8 +76,13 @@ def home():
 @app.route('/focus', methods=['GET'])
 def get_focus_back():
     print('je demande à récupérer le focus sur la fenêtre de Weda')
-    win32gui.SetForegroundWindow(app.config["weda_handle"])
-    return jsonify({'info':f'focus vers {app.config["weda_handle"]}'}), 200
+    try :
+        win32gui.SetForegroundWindow(app.config["weda_handle"])
+        return jsonify({'info':f'focus vers {app.config["weda_handle"]}'}), 200
+    except Exception as e:
+        errormessage = f"Erreur lors de la récupération du focus sur la fenêtre de Weda. {e}"
+        print(errormessage)
+        return jsonify({'error': errormessage}), 500
 
 
 @app.route('/print', methods=['POST'])
