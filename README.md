@@ -6,6 +6,7 @@ Permet d'activer l'envoi d'instruction au TPE, ainsi que l'impression complète 
 
 Instructions d'installation manuelles :
 - télécharcher le fichier executable [Télécharger companion.exe](https://github.com/Refhi/Weda-Helper-Companion/releases/latest/download/companion.exe) dans le dossier de votre choix, et le démarrer
+- windows va probablement afficher un message de prudence concernant les risques d'execution d'un programme extérieur. Je vous rassure : le programme a été fait sans aucun virus/malware/etc. Mais n'hésitez pas à passer un coup d'antivirus pour vous rassurer avant d'autoriser l'exception (vous aurez peut-être besoin de cliquer sur "plus de renseignements" sous windows 11)
 - suivre les instructions
 - vous pouvez placer un raccourcis dans le dossier "démarrage" de votre session pour que le companion se lance automatiquement au démarrage (Win+R, puis taper shell:startup, y coller le raccourcis)
 
