@@ -10,8 +10,11 @@ import tempfile # nécessaire pour l'impression
 import subprocess # nécessaire pour l'impression sous linux
 import threading 
 
-import win32gui # nécessaire si besoin de travailler sur le vol de focus d'adobe reader
-
+# nécessaire pour luter contre le vol de focus :
+if os.name == 'nt':  # Si le système d'exploitation est Windows
+    import win32gui # installé grace à pywin32
+    from pynput.keyboard import Controller
+    kbd = Controller()
 
 
 try:
@@ -76,13 +79,24 @@ def home():
 @app.route('/focus', methods=['GET'])
 def get_focus_back():
     print('je demande à récupérer le focus sur la fenêtre de Weda')
-    try :
-        win32gui.SetForegroundWindow(app.config["weda_handle"])
-        return jsonify({'info':f'focus vers {app.config["weda_handle"]}'}), 200
-    except Exception as e:
-        errormessage = f"Erreur lors de la récupération du focus sur la fenêtre de Weda. {e}"
-        print(errormessage)
-        return jsonify({'error': errormessage}), 500
+    if os.name == 'nt':  # Si le système d'exploitation est Windows
+
+        kbd.press(Key.alt)
+        try:
+            win32gui.SetForegroundWindow(app.config["weda_handle"])
+        except Exception as e:
+
+            kbd.release(Key.alt)
+            errormessage = f"Erreur lors de la récupération du focus sur la fenêtre de Weda. {e}"
+            print(errormessage)
+            return jsonify({'error': errormessage}), 500
+        finally:
+            kbd.release(Key.alt)            
+            return jsonify({'info':f'focus vers {app.config["weda_handle"]}'}), 200
+        
+
+    else:
+        return jsonify({'error': 'fonctionnalité non disponible sur ce système d\'exploitation'}), 500
 
 
 @app.route('/print', methods=['POST'])

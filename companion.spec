@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['C:\\Users\\Papa\\Documents\\gitSync\\Weda-Helper-Companion\\companion.py'],
+    ['companion.py'],
     pathex=[],
     binaries=[],
     datas=[],
