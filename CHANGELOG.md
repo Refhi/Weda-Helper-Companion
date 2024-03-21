@@ -2,6 +2,9 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [1.2.1] - 2024-03-21
+- correction d'une coquille au niveau de la configuration par défaut (numéro de port)
+
 ## [1.2] - 2024-01-14
 - ajout d'une capacité de récupération du focus lorsque ce dernier est volé par l'application d'impression
 

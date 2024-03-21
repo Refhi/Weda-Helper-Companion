@@ -1,7 +1,8 @@
 # companion for Weda-Helper
 # author : refhi
 # allow Weda-Helper to communicate with the TPE and start the printing process
-version = '1.2'
+version = '1.2' # version communiquée à Weda-Helper pour vérifier la compatibilité
+# véritable version = 1.2.1
 from urllib.parse import urlparse
 import ipaddress
 import os
@@ -220,7 +221,7 @@ defaut_conf = """// Fichier de configuration
 // Ce fichier contient les paramètres de configuration pour le Weda Helper Companion.
 // L'executable est téléchargeable sur https://github.com/Refhi/Weda-Helper-Companion/releases/latest/download/companion.exe
 
-// Numéro de port pour le serveur (en général 3000 est ok, mais n'hésitez pas à le changer si ça ne fonctionne pas)
+// Numéro de port pour le serveur (en général 4821 est ok, mais n'hésitez pas à le changer si ça ne fonctionne pas)
 port = 4821
 
 // Adresse IP du TPE (à récupérer auprès de votre installateur de TPE.
