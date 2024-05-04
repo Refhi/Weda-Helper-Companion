@@ -3,7 +3,7 @@
 
 a = Analysis(
     ['companion.py'],
-    pathex=[],
+    pathex=['venv/lib/python3.12/site-packages'],
     binaries=[],
     datas=[],
     hiddenimports=[],

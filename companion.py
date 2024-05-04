@@ -6,6 +6,7 @@ version = '1.2' # version communiquée à Weda-Helper pour vérifier la compatib
 from urllib.parse import urlparse
 import ipaddress
 import os
+import platform
 
 import tempfile # nécessaire pour l'impression
 import subprocess # nécessaire pour l'impression sous linux
@@ -233,33 +234,37 @@ portTPE = 5000
 apiKey = tobechanged"""
 
 if __name__ == '__main__':
+    base_dir = os.path.abspath(os.path.dirname(sys.executable))
+    config_file_path = os.path.join(base_dir, './conf.ini')
     # check if conf.ini exists, if not create it with default values
     try:
-        with open('conf.ini', 'r') as file:
+        with open(config_file_path, 'r') as file:
             pass
     except FileNotFoundError:
-        with open('conf.ini', 'w') as file:
+        with open(config_file_path, 'w') as file:
             file.write(defaut_conf)
             print('''Bienvenue dans le companion Weda-Helper.
                   
 Un fichier de configuration vient d'être créé avec succès.
 ''')
-        path = os.path.realpath('conf.ini')
+
         input(f"""Afin de préparer la configuration, un éditeur devrait s'ouvrir automatiquement.
 Suivez les instructions dans le fichier puis sauvegardez-le, fermez-le et revenez ici.
 
 En cas de difficulté, vous pourrez éditer manuellement le fichier conf.ini que vous trouverez ici :
-{path}
+{config_file_path}
 Il suffit de l'éditer avec le bloc-note de Windows ou un éditeur de texte et de le sauvegarder.
 
 Appuyez sur Entrée pour continuer...""")
-        os.system(f'start notepad {path}')
+        if os.name == 'nt':
+            os.system(f'start notepad {config_file_path}')
+        if platform.system() == "Darwin":
+            os.system(f'open -a TextEdit {config_file_path}')
         input("Quand vous avez fini, Appuyez sur Entrée pour continuer...")
-    conf = get_conf_from_file('conf.ini')
+    conf = get_conf_from_file(config_file_path)
     if not check_conf(conf):
         print("Error: Fichier de configuration invalide.")
-        path = os.path.realpath('conf.ini')
-        print(f"Le fichier est situé dans {path}, merci de le vérifier. Pour le remettre à zéro, supprimez-le puis relancez l'application.")
+        print(f"Le fichier est situé dans {config_file_path}, merci de le vérifier. Pour le remettre à zéro, supprimez-le puis relancez l'application.")
         input("Appuyez sur Entrée pour quitter...")
         quit()
     port = int(conf['port'])
