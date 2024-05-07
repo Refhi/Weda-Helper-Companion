@@ -1,8 +1,14 @@
 import socket
+from enum import IntEnum
+
+class ProtocolTPE(IntEnum):
+    DEFAUT = 0
+    CONCERTV3 = 1
+
 
 BUFFER_SIZE = 1024
     
-def send_instruction(ipTPE,portTPE,cents):
+def send_instruction(ipTPE,portTPE,cents,protocol):
     decimales = 0
     if type(cents) != str:
         cents = str(cents)
@@ -30,7 +36,15 @@ def send_instruction(ipTPE,portTPE,cents):
 
     if cents is not None:
         print("je retiens la valeur suivante: ",cents," centimes d'euros")
-        MESSAGE = bytes("00000"+cents+"000978", 'utf-8')
+        if protocol == ProtocolTPE.DEFAUT: 
+            MESSAGE = bytes("00000"+cents+"000978", 'utf-8')
+
+        elif protocol == ProtocolTPE.CONCERTV3: #Protocole Concert V3
+            MESSAGE = bytes("CZ0040300CJ012247300123456CA00201CB005"+cents+"CD0010CE003978", 'utf-8')
+
+        else:
+            print("protocole non valide")
+            return
         print("j'envoie ",MESSAGE.decode("UTF-8"),"sur ",ipTPE,":",portTPE)
         print("en attente de la réponse du terminal")
 
@@ -53,4 +67,4 @@ def send_instruction(ipTPE,portTPE,cents):
 if __name__ == "__main__":
     TCP_IP = '192.168.1.35'
     TCP_PORT = 5000
-    send_instruction(TCP_IP,TCP_PORT,0)
+    send_instruction(TCP_IP,TCP_PORT,0, ProtocolTPE.DEFAUT)
