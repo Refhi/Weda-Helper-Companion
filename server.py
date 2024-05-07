@@ -38,7 +38,7 @@ class Server(Flask):
       def limit_remote_addr():
          if request.remote_addr != '127.0.0.1':
             abort(403)
-         if 'apikey' not in request.args or request.args.get('apikey') != self.settings.value("apiKey"):
+         if 'apiKey' not in request.args or request.args.get('apiKey') != self.settings.value("apiKey"):
             abort(jsonify({
                'error': f'Clé API non fournie ou non conforme. Elle doit être notée dans le fichier conf.ini et dans les options de l\'extension Chrome',
                }), 403)    
