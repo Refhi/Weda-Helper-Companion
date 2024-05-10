@@ -21,6 +21,7 @@ class MenuItem(object):
         self.tray = QtWidgets.QSystemTrayIcon()
         self.tray.setIcon(icon)
         self.tray.setVisible(True)
+        self.tray.setToolTip(f"Companion Weda Helper - {version}")
 
         # Create the menu
         self.menu = QtWidgets.QMenu()
