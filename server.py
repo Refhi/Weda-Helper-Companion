@@ -104,28 +104,6 @@ class Server(Flask):
          threading.Thread(target=remove_file_after_delay, args=(temp_file_name, 20)).start()
          return jsonify({'info':'Impression demandée pour le fichier PDF'}), 200
 
-      @self.route('/download', methods=['POST'])
-      def save_file():
-         if 'application/pdf' not in request.headers.get('Content-Type', ''):
-            return jsonify({'error': 'Invalid Content-Type, expected application/pdf'}), 400
-
-         pdf_data = request.data
-         download_path = self.settings.value("download_path")
-         if download_path == None:
-            return jsonify({'error': 'Le dossier de téléchargements n\'est pas définit dans le companion'})
-         download_path = download_path + "/Ordonnance"
-         i = 1
-         if os.path.exists(download_path + ".pdf"):
-            while os.path.exists(download_path + str(i) + ".pdf"):
-               i=i+1
-            download_path = download_path + str(i) + ".pdf"
-         else:
-            download_path = download_path + ".pdf"
-         file = open(download_path, "wb")
-         file.write(pdf_data)
-         file.close()
-         return jsonify({'info':'Téléchargement demandée pour le fichier PDF'}), 200
-
       @self.route('/tpe/<amount>', methods=['GET'])
       def send_to_tpe(amount):
          ip = self.settings.value('iptpe')

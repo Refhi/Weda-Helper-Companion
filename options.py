@@ -1,6 +1,6 @@
 import sys
 import os
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QFileDialog, QPushButton, QVBoxLayout, QFormLayout, QMessageBox
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QFormLayout, QMessageBox
 from PyQt5.QtCore import QSettings
 import re
 
@@ -14,10 +14,6 @@ class OptionsWindow(QWidget):
         self.port_input = QLineEdit()
         self.iptpe_input = QLineEdit()
         self.port_tpe_input = QLineEdit()
-        self.download_path_label = QLabel()
-        self.download_path_button = QPushButton("Choisir un dossier de téléchargements")
-        self.download_path_button.clicked.connect(self.chose_path)
-
         
         # Create save button
         self.save_button = QPushButton("Enregistrer")
@@ -30,8 +26,6 @@ class OptionsWindow(QWidget):
         form_layout.addRow("Port:", self.port_input)
         form_layout.addRow("IP TPE:", self.iptpe_input)
         form_layout.addRow("Port TPE:", self.port_tpe_input)
-        form_layout.addRow("Téléchargements:", self.download_path_label)
-        form_layout.addRow(self.download_path_button)
         layout.addLayout(form_layout)
         layout.addWidget(self.save_button)
         self.setLayout(layout)
@@ -55,7 +49,6 @@ class OptionsWindow(QWidget):
         port = self.port_input.text()
         iptpe = self.iptpe_input.text()
         port_tpe = self.port_tpe_input.text()
-        download_path = self.download_path_label.text()
         
         # Validate input
         if  not apiKey:
@@ -78,7 +71,6 @@ class OptionsWindow(QWidget):
         settings.setValue("port", port)
         settings.setValue("iptpe", iptpe)
         settings.setValue("port_tpe", port_tpe)
-        settings.setValue("download_path", download_path)
         
         print("Options saved!")
         self.restart_information()
@@ -90,7 +82,6 @@ class OptionsWindow(QWidget):
         port = settings.value("port")
         iptpe = settings.value("iptpe")
         port_tpe = settings.value("port_tpe")
-        download_path = settings.value("download_path")
 
         if port is None:
             port = "4821" # Valeur par défaut
@@ -104,7 +95,6 @@ class OptionsWindow(QWidget):
         self.port_input.setText(port)
         self.iptpe_input.setText(iptpe)
         self.port_tpe_input.setText(port_tpe)
-        self.download_path_label.setText(download_path)
 
     def show_error(self, error):
 
@@ -115,9 +105,6 @@ class OptionsWindow(QWidget):
         msg_box.setInformativeText(error)
         msg_box.setWindowTitle("Erreur")
         msg_box.exec_()
-
-    def chose_path (self):
-        self.download_path_label.setText(QFileDialog.getExistingDirectory(self, "Select Folder"))
 
     def restart_information(self):
 
