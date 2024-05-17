@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButto
 from PyQt5.QtCore import QSettings, Qt
 import re
 
+RUN_PATH = "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"
+
 class OptionsWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -14,6 +16,7 @@ class OptionsWindow(QWidget):
         self.port_input = QLineEdit()
         self.iptpe_input = QLineEdit()
         self.port_tpe_input = QLineEdit()
+        self.start_at_boot_checkbox = QCheckBox()
         
         # Create save button
         self.save_button = QPushButton("Enregistrer")
@@ -58,6 +61,7 @@ class OptionsWindow(QWidget):
         port = self.port_input.text()
         iptpe = self.iptpe_input.text()
         port_tpe = self.port_tpe_input.text()
+        start_at_boot = self.start_at_boot_checkbox.isChecked()
         
         # Validate input
         if  not apiKey:
@@ -80,6 +84,14 @@ class OptionsWindow(QWidget):
         settings.setValue("port", port)
         settings.setValue("iptpe", iptpe)
         settings.setValue("port_tpe", port_tpe)
+
+        if os.name == 'nt':
+            register_settings = QSettings(RUN_PATH, QSettings.NativeFormat)
+            if self.start_at_boot_checkbox.isChecked(): # Save startup information to register on Windows
+                register_settings.setValue("WedaCompanionHelper",sys.argv[0]);
+            else:
+                register_settings.remove("WedaCompanionHelper");
+            
         
         print("Options saved!")
         self.restart_information()
@@ -104,6 +116,9 @@ class OptionsWindow(QWidget):
         self.port_input.setText(port)
         self.iptpe_input.setText(iptpe)
         self.port_tpe_input.setText(port_tpe)
+        if os.name == 'nt':
+            register_settings = QSettings(RUN_PATH, QSettings.NativeFormat)
+            self.start_at_boot_checkbox.setChecked(register_settings.contains("WedaCompanionHelper"))# Load startup from register on Windows
 
     def show_error(self, error):
 
