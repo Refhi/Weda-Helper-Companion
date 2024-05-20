@@ -1,5 +1,6 @@
 /__pycache__
 companion.test.py
+build/*
 build/companion/Analysis-00.toc
 build/companion/base_library.zip
 build/companion/companion.pkg
@@ -19,5 +20,10 @@ dist/images/companion150.png
 dist/images/companion310.png
 dist/images/unnamed.png
 dist/conf.ini
+dist/Weda\ Companion/
+dist/Weda\ Companion.app/
 build/companion/COLLECT-00.toc
 build/companion/companion.exe
+venv/*
+*.sublime-workspace
+*.sublime-project
