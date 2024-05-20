@@ -1,7 +1,7 @@
 import sys
 import os
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QComboBox, QPushButton, QVBoxLayout, QFormLayout, QMessageBox
-from PyQt5.QtCore import QSettings
+from PyQt5.QtWidgets import QCheckBox, QApplication, QWidget, QLabel, QLineEdit, QComboBox, QPushButton, QVBoxLayout, QGridLayout, QMessageBox
+from PyQt5.QtCore import QSettings, Qt
 import re
 from tpe import ProtocolTPE
 
@@ -19,7 +19,7 @@ class OptionsWindow(QWidget):
         self.port_tpe_input = QLineEdit()
         self.protocol_tpe_input = QComboBox()
         self.protocol_tpe_input.addItems(["Défaut", "Concert V3"]) #Nommer correctement le protocole "Défaut"
-
+        self.start_at_boot_checkbox = QCheckBox()
         
         # Create save button
         self.save_button = QPushButton("Enregistrer")
@@ -40,7 +40,10 @@ class OptionsWindow(QWidget):
         form_layout.addWidget(self.iptpe_input, 6,1)
         form_layout.addWidget(QLabel("Port TPE:"), 7,0, alignment=Qt.AlignmentFlag.AlignRight)
         form_layout.addWidget(self.port_tpe_input, 7,1)
-        form_layout.addWidget(QLabel('<i>A récupérer auprès de votre installateur de TPE</i>'), 8,0,1,2, Qt.AlignmentFlag.AlignCenter)
+        form_layout.addWidget(QLabel('<i>A récupérer auprès de votre installateur de TPE <br>(en général 5000 pour verifone et 8888 pour ingenico)</i>'), 8,0,1,2, Qt.AlignmentFlag.AlignCenter)
+        form_layout.addWidget(QLabel(), 9,0)
+        form_layout.addWidget(QLabel("Protocole TPE:"), 10,0, alignment=Qt.AlignmentFlag.AlignRight)
+        form_layout.addWidget(self.protocol_tpe_input, 10,1)
         layout.addLayout(form_layout)
         layout.addWidget(self.save_button)
         self.setLayout(layout)
@@ -65,7 +68,8 @@ class OptionsWindow(QWidget):
         iptpe = self.iptpe_input.text()
         port_tpe = self.port_tpe_input.text()
         protocol_tpe = self.protocol_tpe_input.currentIndex()
-        
+        start_at_boot = self.start_at_boot_checkbox.isChecked()
+
         # Validate input
         if  not apiKey:
             self.show_error("La clé API est vide")
@@ -124,7 +128,7 @@ class OptionsWindow(QWidget):
         self.port_input.setText(port)
         self.iptpe_input.setText(iptpe)
         self.port_tpe_input.setText(port_tpe)
-        self.protocol_tpe_input.setCurrentIndex(protocol_tpe)
+        self.protocol_tpe_input.setCurrentIndex(int(protocol_tpe))
 
         if os.name == 'nt':
             register_settings = QSettings(RUN_PATH, QSettings.NativeFormat)

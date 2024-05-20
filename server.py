@@ -15,7 +15,10 @@ import subprocess
 import threading 
 import time
 from tpe import send_instruction, ProtocolTPE
-from pynput.keyboard import Controller, Key
+try:
+   from pynput.keyboard import Controller, Key
+except ImportError:
+   print("pynput can't be loaded, some features will not be available")
 
 if os.name == 'nt':  # Si le système d'exploitation est Windows
     import win32gui 
@@ -23,7 +26,7 @@ if os.name == 'nt':  # Si le système d'exploitation est Windows
 
 class Server(Flask):
     def __init__(self, name):
-      super(Flask, self).__init__(name)
+      super().__init__(name)
 
       self.settings = QSettings("weda", "companion")
 

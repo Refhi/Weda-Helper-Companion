@@ -2,6 +2,11 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [2.0] - 2024-05-20 - Version majeure
+- refactoring du code avec ajout d'une interface graphique pour les options
+- ajout d'un autostart sous windows
+- ajout d'une icone en systray
+
 ## [1.2.1] - 2024-03-21
 - correction d'une coquille au niveau de la configuration par défaut (numéro de port)
 
