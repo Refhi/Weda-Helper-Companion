@@ -5,6 +5,8 @@ from PyQt5.QtCore import QSettings
 import re
 from tpe import ProtocolTPE
 
+RUN_PATH = "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"
+
 class OptionsWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -17,6 +19,7 @@ class OptionsWindow(QWidget):
         self.port_tpe_input = QLineEdit()
         self.protocol_tpe_input = QComboBox()
         self.protocol_tpe_input.addItems(["Défaut", "Concert V3"]) #Nommer correctement le protocole "Défaut"
+
         
         # Create save button
         self.save_button = QPushButton("Enregistrer")
@@ -24,12 +27,20 @@ class OptionsWindow(QWidget):
         
         # Set up layout
         layout = QVBoxLayout()
-        form_layout = QFormLayout()
-        form_layout.addRow("API Key:", self.apiKey_input)
-        form_layout.addRow("Port:", self.port_input)
-        form_layout.addRow("IP TPE:", self.iptpe_input)
-        form_layout.addRow("Port TPE:", self.port_tpe_input)
-        form_layout.addRow("Protocole TPE:", self.protocol_tpe_input)
+        form_layout = QGridLayout()
+        form_layout.addWidget(QLabel("Clé API:"), 0,0, alignment=Qt.AlignmentFlag.AlignRight)
+        form_layout.addWidget(self.apiKey_input, 0,1)
+        form_layout.addWidget(QLabel('<i>A récupérer dans les options de l\'extension</i>'), 1,0,1,2, Qt.AlignmentFlag.AlignCenter)
+        form_layout.addWidget(QLabel(), 2,0)
+        form_layout.addWidget(QLabel("Port:"), 3,0, alignment=Qt.AlignmentFlag.AlignRight)
+        form_layout.addWidget(self.port_input, 3,1)
+        form_layout.addWidget(QLabel('<i>A récupérer dans les options de l\'extension \n 4821 par défaut</i>'), 4,0,1,2, Qt.AlignmentFlag.AlignCenter)
+        form_layout.addWidget(QLabel(), 5,0)
+        form_layout.addWidget(QLabel("IP TPE:"), 6,0, alignment=Qt.AlignmentFlag.AlignRight)
+        form_layout.addWidget(self.iptpe_input, 6,1)
+        form_layout.addWidget(QLabel("Port TPE:"), 7,0, alignment=Qt.AlignmentFlag.AlignRight)
+        form_layout.addWidget(self.port_tpe_input, 7,1)
+        form_layout.addWidget(QLabel('<i>A récupérer auprès de votre installateur de TPE</i>'), 8,0,1,2, Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(form_layout)
         layout.addWidget(self.save_button)
         self.setLayout(layout)
@@ -77,6 +88,14 @@ class OptionsWindow(QWidget):
         settings.setValue("iptpe", iptpe)
         settings.setValue("port_tpe", port_tpe)
         settings.setValue('protocol_tpe', protocol_tpe)
+
+        if os.name == 'nt':
+            register_settings = QSettings(RUN_PATH, QSettings.NativeFormat)
+            if self.start_at_boot_checkbox.isChecked(): # Save startup information to register on Windows
+                register_settings.setValue("WedaCompanionHelper",sys.argv[0]);
+            else:
+                register_settings.remove("WedaCompanionHelper");
+            
         
         print("Options saved!")
         self.restart_information()
@@ -106,6 +125,11 @@ class OptionsWindow(QWidget):
         self.iptpe_input.setText(iptpe)
         self.port_tpe_input.setText(port_tpe)
         self.protocol_tpe_input.setCurrentIndex(protocol_tpe)
+
+        if os.name == 'nt':
+            register_settings = QSettings(RUN_PATH, QSettings.NativeFormat)
+            self.start_at_boot_checkbox.setChecked(register_settings.contains("WedaCompanionHelper"))# Load startup from register on Windows
+
 
     def show_error(self, error):
 
