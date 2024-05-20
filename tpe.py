@@ -30,7 +30,7 @@ def send_instruction(ipTPE,portTPE,cents):
 
     if cents is not None:
         print("je retiens la valeur suivante: ",cents," centimes d'euros")
-        MESSAGE = bytes("00000"+cents+"000978", 'utf-8')
+        MESSAGE = bytes("CZ0040300CJ012247300123456CA00201CB005"+cents+"CD0010CE003978", 'utf-8')
         print("j'envoie ",MESSAGE.decode("UTF-8"),"sur ",ipTPE,":",portTPE)
         print("en attente de la réponse du terminal")
 
