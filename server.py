@@ -14,7 +14,7 @@ import tempfile
 import subprocess
 import threading 
 import time
-from tpe import send_instruction
+from tpe import send_instruction, ProtocolTPE
 from pynput.keyboard import Controller, Key
 
 if os.name == 'nt':  # Si le système d'exploitation est Windows
@@ -108,7 +108,8 @@ class Server(Flask):
       def send_to_tpe(amount):
          ip = self.settings.value('iptpe')
          port = self.settings.value('port_tpe')
-         send_instruction(ip, port, amount)
+         protocol = self.settings.value('protocol_tpe')
+         send_instruction(ip, port, amount, protocol)
          return jsonify({'info': f'TPE asked => {amount} cents @ {ip}:{port}'}), 200
     
     def start(self):

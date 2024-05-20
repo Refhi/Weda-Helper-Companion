@@ -1,8 +1,9 @@
 import sys
 import os
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QGridLayout, QMessageBox
-from PyQt5.QtCore import QSettings, Qt
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QComboBox, QPushButton, QVBoxLayout, QFormLayout, QMessageBox
+from PyQt5.QtCore import QSettings
 import re
+from tpe import ProtocolTPE
 
 RUN_PATH = "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Run"
 
@@ -16,7 +17,9 @@ class OptionsWindow(QWidget):
         self.port_input = QLineEdit()
         self.iptpe_input = QLineEdit()
         self.port_tpe_input = QLineEdit()
-        self.start_at_boot_checkbox = QCheckBox()
+        self.protocol_tpe_input = QComboBox()
+        self.protocol_tpe_input.addItems(["Défaut", "Concert V3"]) #Nommer correctement le protocole "Défaut"
+
         
         # Create save button
         self.save_button = QPushButton("Enregistrer")
@@ -61,7 +64,7 @@ class OptionsWindow(QWidget):
         port = self.port_input.text()
         iptpe = self.iptpe_input.text()
         port_tpe = self.port_tpe_input.text()
-        start_at_boot = self.start_at_boot_checkbox.isChecked()
+        protocol_tpe = self.protocol_tpe_input.currentIndex()
         
         # Validate input
         if  not apiKey:
@@ -84,6 +87,7 @@ class OptionsWindow(QWidget):
         settings.setValue("port", port)
         settings.setValue("iptpe", iptpe)
         settings.setValue("port_tpe", port_tpe)
+        settings.setValue('protocol_tpe', protocol_tpe)
 
         if os.name == 'nt':
             register_settings = QSettings(RUN_PATH, QSettings.NativeFormat)
@@ -103,6 +107,8 @@ class OptionsWindow(QWidget):
         port = settings.value("port")
         iptpe = settings.value("iptpe")
         port_tpe = settings.value("port_tpe")
+        protocol_tpe = settings.value("protocol_tpe")
+        print(settings.value("protocol_tpe"))
 
         if port is None:
             port = "4821" # Valeur par défaut
@@ -110,15 +116,20 @@ class OptionsWindow(QWidget):
             port_tpe = "5000"
         if iptpe is None:
             iptpe = "192.168.1.35"
+        if protocol_tpe is None:
+            protocol_tpe = ProtocolTPE.DEFAUT
         
         # Set values in input fields
         self.apiKey_input.setText(apiKey)
         self.port_input.setText(port)
         self.iptpe_input.setText(iptpe)
         self.port_tpe_input.setText(port_tpe)
+        self.protocol_tpe_input.setCurrentIndex(protocol_tpe)
+
         if os.name == 'nt':
             register_settings = QSettings(RUN_PATH, QSettings.NativeFormat)
             self.start_at_boot_checkbox.setChecked(register_settings.contains("WedaCompanionHelper"))# Load startup from register on Windows
+
 
     def show_error(self, error):
 
