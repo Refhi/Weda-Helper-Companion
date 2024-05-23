@@ -4,16 +4,20 @@
 # allow Weda-Helper to communicate with the TPE and start the printing process
 global version
 version = '1.2'
+global authorized_extensions
+authorized_extensions = ['.doc', '.docx', '.pdf', '.ppt', '.pptx', '.xls', '.xslx', '.jpg', '.bmp', '.xlsx', '.txt', '.hpm', '.png', '.gif', '.jfif', '.tif', '.jpeg', '.rtf', '.csv', '.xml']
 
 from flask import Flask, request, abort, jsonify
 from flask_cors import CORS
 from PyQt5.QtCore import QSettings
 import os
+import glob
 
 import tempfile
 import subprocess
 import threading 
 import time
+import base64
 from tpe import send_instruction, ProtocolTPE
 try:
    from pynput.keyboard import Controller, Key
@@ -114,6 +118,30 @@ class Server(Flask):
          protocol = self.settings.value('protocol_tpe')
          send_instruction(ip, port, amount, protocol)
          return jsonify({'info': f'TPE asked => {amount} cents @ {ip}:{port}'}), 200
+
+      @self.route('/latestFile', methods=['GET'])
+      def get_latest_file():
+         if self.settings.value('upload_directory') is None:
+            return jsonify({'error':'Le dossier d\'upload n\'est pas défini dans les options du Companion'}), 500
+         folder_path = self.settings.value('upload_directory')+'/*'
+         list_files = glob.glob(folder_path)
+         list_files.sort(reverse=True, key=os.path.getmtime)
+         file_path = ""
+
+         for file in list_files:
+            firstpart, file_extension = os.path.splitext(file)
+            filename = os.path.basename(file)
+            if filename.startswith("~$") or filename.startswith("."): #On retire les fichiers temporaires
+               continue
+            if file_extension in authorized_extensions:
+               file_path=file
+               break
+         if file_path == "":
+            return jsonify({'error':'Pas de fichier avec une extension autorisée dans le dossier d\'upload'}), 500
+
+         file = open(file_path, "rb")
+         fileContent = file.read();
+         return {'fileName': os.path.basename(file_path),'data':base64.b64encode(fileContent).decode('utf-8')},200;
     
     def start(self):
       port=self.settings.value("port")

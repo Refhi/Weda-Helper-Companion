@@ -1,6 +1,6 @@
 import sys
 import os
-from PyQt5.QtWidgets import QCheckBox, QApplication, QWidget, QLabel, QLineEdit, QComboBox, QPushButton, QVBoxLayout, QGridLayout, QMessageBox
+from PyQt5.QtWidgets import QCheckBox, QApplication, QWidget, QLabel, QLineEdit, QComboBox, QPushButton, QVBoxLayout, QGridLayout, QMessageBox, QFileDialog
 from PyQt5.QtCore import QSettings, Qt
 import re
 from tpe import ProtocolTPE
@@ -20,6 +20,11 @@ class OptionsWindow(QWidget):
         self.protocol_tpe_input = QComboBox()
         self.protocol_tpe_input.addItems(["Défaut", "Concert V3"]) #Nommer correctement le protocole "Défaut"
         self.start_at_boot_checkbox = QCheckBox()
+
+        self.choose_upload_directory = QPushButton("Sélectionner un dossier")
+        self.choose_upload_directory.clicked.connect(self.show_folder_dialog)
+        self.upload_directory_label = QLabel()
+        self.upload_directory_label.setAlignment(Qt.AlignCenter)
         
         # Create save button
         self.save_button = QPushButton("Enregistrer")
@@ -44,6 +49,18 @@ class OptionsWindow(QWidget):
         form_layout.addWidget(QLabel(), 9,0)
         form_layout.addWidget(QLabel("Protocole TPE:"), 10,0, alignment=Qt.AlignmentFlag.AlignRight)
         form_layout.addWidget(self.protocol_tpe_input, 10,1)
+        form_layout.addWidget(QLabel(), 11,0)
+        form_layout.addWidget(QLabel("Démarrer automatiquement:"), 12,0, alignment=Qt.AlignmentFlag.AlignRight)
+        form_layout.addWidget(self.start_at_boot_checkbox, 12,1)
+        form_layout.addWidget(QLabel(), 13,0)
+        form_layout.addWidget(QLabel("Dossier d'upload:"), 14,0, alignment=Qt.AlignmentFlag.AlignRight)
+        form_layout.addWidget(self.choose_upload_directory, 14,1)
+
+        form_layout.addWidget(self.upload_directory_label, 15,0,1,2, Qt.AlignmentFlag.AlignCenter)
+        upload_information_label = QLabel('<i>Dossier dont le dernier fichier sera uploadé lors de l\'utilisation du raccourci dans l\'extension</i>')
+        upload_information_label.setAlignment(Qt.AlignCenter)
+        upload_information_label.setWordWrap(True)
+        form_layout.addWidget(upload_information_label, 16,0,1,2)
         layout.addLayout(form_layout)
         layout.addWidget(self.save_button)
         self.setLayout(layout)
@@ -60,6 +77,16 @@ class OptionsWindow(QWidget):
 
     def closeEvent(self, event):
         event.ignore() # On ignore la fermeture de la fenetre pour forcer à passer par le bouton Enregistrer et effectuer la vérification des options
+    
+    def show_folder_dialog(self):
+        folder_dialog = QFileDialog(self)
+        folder_dialog.setWindowTitle('Sélectionner un dossier')
+        folder_dialog.setFileMode(QFileDialog.Directory)
+        folder_dialog.setOption(QFileDialog.ShowDirsOnly, True)
+        folder_dialog.setOption(QFileDialog.ReadOnly, False)
+        if folder_dialog.exec_() == QFileDialog.Accepted:
+            selected_folder = folder_dialog.selectedFiles()[0]
+            self.upload_directory_label.setText(selected_folder)
 
     def save_options(self):
         # Get values from input fields
@@ -69,6 +96,7 @@ class OptionsWindow(QWidget):
         port_tpe = self.port_tpe_input.text()
         protocol_tpe = self.protocol_tpe_input.currentIndex()
         start_at_boot = self.start_at_boot_checkbox.isChecked()
+        upload_directory = self.upload_directory_label.text()
 
         # Validate input
         if  not apiKey:
@@ -83,6 +111,8 @@ class OptionsWindow(QWidget):
         if not re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", iptpe):
             self.show_error("L'adresse IP du TPE n'est pas valide.")
             return
+        if not upload_directory or upload_directory == "Non défini":
+            upload_directory = None
         
 
         # Save options to settings
@@ -92,6 +122,7 @@ class OptionsWindow(QWidget):
         settings.setValue("iptpe", iptpe)
         settings.setValue("port_tpe", port_tpe)
         settings.setValue('protocol_tpe', protocol_tpe)
+        settings.setValue('upload_directory', upload_directory)
 
         if os.name == 'nt':
             register_settings = QSettings(RUN_PATH, QSettings.NativeFormat)
@@ -112,7 +143,7 @@ class OptionsWindow(QWidget):
         iptpe = settings.value("iptpe")
         port_tpe = settings.value("port_tpe")
         protocol_tpe = settings.value("protocol_tpe")
-        print(settings.value("protocol_tpe"))
+        upload_directory = settings.value("upload_directory")
 
         if port is None:
             port = "4821" # Valeur par défaut
@@ -122,6 +153,8 @@ class OptionsWindow(QWidget):
             iptpe = "192.168.1.35"
         if protocol_tpe is None:
             protocol_tpe = ProtocolTPE.DEFAUT
+        if upload_directory is None:
+            upload_directory = "Non défini"
         
         # Set values in input fields
         self.apiKey_input.setText(apiKey)
@@ -129,6 +162,7 @@ class OptionsWindow(QWidget):
         self.iptpe_input.setText(iptpe)
         self.port_tpe_input.setText(port_tpe)
         self.protocol_tpe_input.setCurrentIndex(int(protocol_tpe))
+        self.upload_directory_label.setText(upload_directory)
 
         if os.name == 'nt':
             register_settings = QSettings(RUN_PATH, QSettings.NativeFormat)
