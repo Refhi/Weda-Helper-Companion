@@ -3,7 +3,7 @@
 
 a = Analysis(
     ['gui.py'],
-    pathex=['venv/lib/python3.12/site-packages'],
+    pathex=['.'],
     binaries=[],
     datas=[('./icon.png', '.')],
     hiddenimports=[],

@@ -27,3 +27,5 @@ build/companion/companion.exe
 venv/*
 *.sublime-workspace
 *.sublime-project
+gui.spec
+dist/gui.exe
