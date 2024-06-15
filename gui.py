@@ -4,6 +4,7 @@ import threading
 import os
 from options import OptionsWindow
 from server import *
+# Version = 1.3
 
 class MenuItem(object):
     def setupMenu(self, MainWindow, interface):
@@ -63,6 +64,8 @@ if __name__ == "__main__":
     menuItem = MenuItem()
     menuItem.setupMenu(window, interface)
 
+    print("""Bienvenue sur le Companion de Weda-Helper,
+Utilisez le W dans la barre d'application pour accéder aux options""")
     server=Server(__name__)
     serverThread = threading.Thread(target=server.start, daemon=True) # Démarrage du Flask en daemon pour qu'il s'éteigne lorsque l'application est quittée
     serverThread.start()

@@ -59,7 +59,15 @@ class OptionsWindow(QWidget):
             settings.setValue("alreadyLaunched", True)
 
     def closeEvent(self, event):
-        event.ignore() # On ignore la fermeture de la fenetre pour forcer à passer par le bouton Enregistrer et effectuer la vérification des options
+        reply = QMessageBox.question(self, 'Message',
+                                    "Voulez-vous enregistrer les modifications ?", QMessageBox.Yes | 
+                                    QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            self.save_options()
+        else:
+            self.load_options()
+            event.accept()
 
     def save_options(self):
         # Get values from input fields
@@ -167,7 +175,7 @@ class OptionsWindow(QWidget):
         msg_box.exec_()
 
     def quit(self):
-        #os.execl(sys.executable, sys.executable, *sys.argv) #Redémarre l'application. Fonctionne mais redémarre trop vite et le port est toujours utilisé lors du nouveau lancement
+        # os.execl(sys.executable, sys.executable, *sys.argv) #Redémarre l'application. Fonctionne mais redémarre trop vite et le port est toujours utilisé lors du nouveau lancement
         sys.exit()
         
 

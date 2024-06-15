@@ -3,6 +3,7 @@
 # author : refhi
 # allow Weda-Helper to communicate with the TPE and start the printing process
 global version
+# c'est la version demandée par l'extension Chrome pour vérifier la compatibilité
 version = '1.2'
 
 from flask import Flask, request, abort, jsonify
@@ -39,6 +40,8 @@ class Server(Flask):
 
       @self.before_request
       def limit_remote_addr():
+         if request.path == '/':
+            return
          if request.remote_addr != '127.0.0.1':
             abort(403)
          if 'apiKey' not in request.args or request.args.get('apiKey') != self.settings.value("apiKey"):
