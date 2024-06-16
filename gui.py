@@ -4,7 +4,8 @@ import threading
 import os
 from options import OptionsWindow
 from server import *
-# Version = 1.4
+global true_version
+true_version = '1.4'
 
 class MenuItem(object):
     def setupMenu(self, MainWindow, interface):
@@ -22,7 +23,7 @@ class MenuItem(object):
         self.tray = QtWidgets.QSystemTrayIcon()
         self.tray.setIcon(icon)
         self.tray.setVisible(True)
-        self.tray.setToolTip(f"Companion Weda Helper - {version}")
+        self.tray.setToolTip(f"Companion Weda Helper - {true_version}")
 
         # On facilite l'accès aux options, grace à un simple clic gauche
         self.tray.activated.connect(self.showOptions)
@@ -31,7 +32,7 @@ class MenuItem(object):
         # Create the menu
         self.menu = QtWidgets.QMenu()
 
-        self.informations = QtWidgets.QAction(f"Companion Weda Helper - {version}")
+        self.informations = QtWidgets.QAction(f"Companion Weda Helper - {true_version}")
         self.informations.setEnabled(False)
         self.menu.addAction(self.informations)
 
