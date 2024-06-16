@@ -38,9 +38,9 @@ class Server(Flask):
       CORS(self, origins=['chrome-extension://dbdodecalholckdneehnejnipbgalami','https://secure.weda.fr'])
 
       try:
-         keyboard = Controller()
+         kbd = Controller()
       except NameError:
-         keyboard = None
+         kbd = None
 
       @self.before_request
       def limit_remote_addr():
@@ -67,19 +67,19 @@ class Server(Flask):
       @self.route('/focus', methods=['GET'])
       def get_focus_back():
          if os.name == 'nt':  # Si le système d'exploitation est Windows
-
-            kbd.press(Key.alt)
-            try:
-               win32gui.SetForegroundWindow(self.config["weda_handle"])
-            except Exception as e:
-
-               kbd.release(Key.alt)
-               errormessage = f"Erreur lors de la récupération du focus sur la fenêtre de Weda. {e}"
-               print(errormessage)
-               return jsonify({'error': errormessage}), 500
-            finally:
-               kbd.release(Key.alt)            
-               return jsonify({'info':f'focus vers {self.config["weda_handle"]}'}), 200
+            current_window = win32gui.GetForegroundWindow()
+            if current_window != self.config["weda_handle"]: #Si la fenêtre actuelle est déjà Weda, on ne fait rien
+               kbd.press(Key.alt)
+               try:
+                  win32gui.SetForegroundWindow(self.config["weda_handle"])
+               except Exception as e:
+                  kbd.release(Key.alt)
+                  errormessage = f"Erreur lors de la récupération du focus sur la fenêtre de Weda. {e}"
+                  print(errormessage)
+                  return jsonify({'error': errormessage}), 500
+               finally:
+                  kbd.release(Key.alt)            
+                  return jsonify({'info':f'focus vers {self.config["weda_handle"]}'}), 200
         
          else:
             return jsonify({'error': 'fonctionnalité non disponible sur ce système d\'exploitation'}), 500

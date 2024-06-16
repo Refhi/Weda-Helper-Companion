@@ -4,6 +4,8 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [1.4] - 2024-06-16 - merci https://github.com/Abeldvlpr !
 - ajout du système d'upload vers Weda
+- fix du getFocusBack (cassé dans la 1.3)
+- vérification du focus avant de tenter de le récupérer pour rien (évite normalement de se retrouver avec alt appuyé pour rien dans chrome, ce qui sélectionne induement le menu "...")
 
 ## [1.3] - 2024-05-20 - Version majeure - merci https://github.com/Abeldvlpr !
 - refactoring du code avec ajout d'une interface graphique pour les options 

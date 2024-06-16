@@ -24,11 +24,12 @@ class MenuItem(object):
         self.tray.setVisible(True)
         self.tray.setToolTip(f"Companion Weda Helper - {version}")
 
+        # On facilite l'accès aux options, grace à un simple clic gauche
+        self.tray.activated.connect(self.showOptions)
+
+
         # Create the menu
         self.menu = QtWidgets.QMenu()
-        # self.toggleServiceAction = QtWidgets.QAction("Démarrer le service")
-        # self.toggleServiceAction.triggered.connect(self.toggleService)
-        # self.menu.addAction(self.toggleServiceAction)
 
         self.informations = QtWidgets.QAction(f"Companion Weda Helper - {version}")
         self.informations.setEnabled(False)
@@ -46,15 +47,13 @@ class MenuItem(object):
         # Add the menu to the tray
         self.tray.setContextMenu(self.menu)
 
-    def showOptions(self):
-        self.MainWindow.show()
-        self.MainWindow.raise_()
-        self.MainWindow.activateWindow()
-    # def toggleService(self):
-    #     if self.toggleServiceAction.text() == "Démarrer le service":
-    #         self.toggleServiceAction.setText("Arrêter le service")
-    #     else:
-    #         self.toggleServiceAction.setText("Démarrer le service")
+    def showOptions(self, reason):
+        # ici on vérifie que l'appel de showOptions est bien fait par un clic gauche ou par un clic sur le
+        # "option" présent dans le menu contextuel (grace à "or not reason")
+        if reason == QtWidgets.QSystemTrayIcon.Trigger or not reason:
+            self.MainWindow.show()
+            self.MainWindow.raise_()
+            self.MainWindow.activateWindow()
 
 if __name__ == "__main__":
     interface = QtWidgets.QApplication(sys.argv)
