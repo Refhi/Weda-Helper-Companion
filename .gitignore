@@ -22,8 +22,13 @@ dist/images/unnamed.png
 dist/conf.ini
 dist/Weda\ Companion/
 dist/Weda\ Companion.app/
+dist/*
 build/companion/COLLECT-00.toc
 build/companion/companion.exe
 venv/*
 *.sublime-workspace
 *.sublime-project
+gui.spec
+dist/gui.exe
+dist/Weda Companion/Weda Companion.exe
+dist/Weda Companion/Weda Companion.exe

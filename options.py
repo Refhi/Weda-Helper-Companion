@@ -19,12 +19,11 @@ class OptionsWindow(QWidget):
         self.port_tpe_input = QLineEdit()
         self.protocol_tpe_input = QComboBox()
         self.protocol_tpe_input.addItems(["Défaut", "Concert V3"]) #Nommer correctement le protocole "Défaut"
-        self.start_at_boot_checkbox = QCheckBox()
-
         self.choose_upload_directory = QPushButton("Sélectionner un dossier")
         self.choose_upload_directory.clicked.connect(self.show_folder_dialog)
         self.upload_directory_label = QLabel()
         self.upload_directory_label.setAlignment(Qt.AlignCenter)
+        self.start_at_boot_checkbox = QCheckBox("Démarrage automatique au lancement de Windows")
         
         # Create save button
         self.save_button = QPushButton("Enregistrer")
@@ -35,23 +34,30 @@ class OptionsWindow(QWidget):
         form_layout = QGridLayout()
         form_layout.addWidget(QLabel("Clé API:"), 0,0, alignment=Qt.AlignmentFlag.AlignRight)
         form_layout.addWidget(self.apiKey_input, 0,1)
-        form_layout.addWidget(QLabel('<i>A récupérer dans les options de l\'extension</i>'), 1,0,1,2, Qt.AlignmentFlag.AlignCenter)
-        form_layout.addWidget(QLabel(), 2,0)
-        form_layout.addWidget(QLabel("Port:"), 3,0, alignment=Qt.AlignmentFlag.AlignRight)
-        form_layout.addWidget(self.port_input, 3,1)
-        form_layout.addWidget(QLabel('<i>A récupérer dans les options de l\'extension \n 4821 par défaut</i>'), 4,0,1,2, Qt.AlignmentFlag.AlignCenter)
-        form_layout.addWidget(QLabel(), 5,0)
-        form_layout.addWidget(QLabel("IP TPE:"), 6,0, alignment=Qt.AlignmentFlag.AlignRight)
-        form_layout.addWidget(self.iptpe_input, 6,1)
-        form_layout.addWidget(QLabel("Port TPE:"), 7,0, alignment=Qt.AlignmentFlag.AlignRight)
-        form_layout.addWidget(self.port_tpe_input, 7,1)
-        form_layout.addWidget(QLabel('<i>A récupérer auprès de votre installateur de TPE <br>(en général 5000 pour verifone et 8888 pour ingenico)</i>'), 8,0,1,2, Qt.AlignmentFlag.AlignCenter)
-        form_layout.addWidget(QLabel(), 9,0)
-        form_layout.addWidget(QLabel("Protocole TPE:"), 10,0, alignment=Qt.AlignmentFlag.AlignRight)
-        form_layout.addWidget(self.protocol_tpe_input, 10,1)
-        form_layout.addWidget(QLabel(), 11,0)
-        form_layout.addWidget(QLabel("Démarrer automatiquement:"), 12,0, alignment=Qt.AlignmentFlag.AlignRight)
-        form_layout.addWidget(self.start_at_boot_checkbox, 12,1)
+
+        form_layout.addWidget(QLabel('<i>A récupérer dans les options de l\'extension de Weda Helper (adresse à copier/coller)</i>'), 1,0,1,2, Qt.AlignmentFlag.AlignCenter)
+        url_label = QLabel("chrome-extension://dbdodecalholckdneehnejnipbgalami/options.html")
+        url_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        form_layout.addWidget(url_label, 2,0,1,2, Qt.AlignmentFlag.AlignCenter)
+        form_layout.addWidget(QLabel(), 3,0)
+        form_layout.addWidget(QLabel("Port:"), 4,0, alignment=Qt.AlignmentFlag.AlignRight)
+        form_layout.addWidget(self.port_input, 4,1)
+        form_layout.addWidget(QLabel('<i>A récupérer dans les options de l\'extension \n 4821 par défaut</i>'), 5,0,1,2, Qt.AlignmentFlag.AlignCenter)
+        form_layout.addWidget(QLabel(), 6,0)
+        form_layout.addWidget(QLabel("IP TPE:"), 7,0, alignment=Qt.AlignmentFlag.AlignRight)
+        form_layout.addWidget(self.iptpe_input, 7,1)
+        form_layout.addWidget(QLabel("Port TPE:"), 8,0, alignment=Qt.AlignmentFlag.AlignRight)
+        form_layout.addWidget(self.port_tpe_input, 8,1)
+        form_layout.addWidget(QLabel('<i>A récupérer auprès de votre installateur de TPE <br>(en général 5000 pour verifone et 8888 pour ingenico)</i>'), 9,0,1,2, Qt.AlignmentFlag.AlignCenter)
+        form_layout.addWidget(QLabel(), 10,0)
+        form_layout.addWidget(QLabel("Protocole TPE:"), 11,0, alignment=Qt.AlignmentFlag.AlignRight)
+        form_layout.addWidget(self.protocol_tpe_input, 11,1)
+        # pour windows
+        if os.name == 'nt':
+            form_layout.addWidget(QLabel("Autostart:"), 12,0, alignment=Qt.AlignmentFlag.AlignRight)
+            form_layout.addWidget(self.start_at_boot_checkbox, 12,1)
+            
+        #Dossier d'upload
         form_layout.addWidget(QLabel(), 13,0)
         form_layout.addWidget(QLabel("Dossier d'upload:"), 14,0, alignment=Qt.AlignmentFlag.AlignRight)
         form_layout.addWidget(self.choose_upload_directory, 14,1)
@@ -61,6 +67,7 @@ class OptionsWindow(QWidget):
         upload_information_label.setAlignment(Qt.AlignCenter)
         upload_information_label.setWordWrap(True)
         form_layout.addWidget(upload_information_label, 16,0,1,2)
+
         layout.addLayout(form_layout)
         layout.addWidget(self.save_button)
         self.setLayout(layout)
@@ -76,7 +83,15 @@ class OptionsWindow(QWidget):
             settings.setValue("alreadyLaunched", True)
 
     def closeEvent(self, event):
-        event.ignore() # On ignore la fermeture de la fenetre pour forcer à passer par le bouton Enregistrer et effectuer la vérification des options
+        reply = QMessageBox.question(self, 'Message',
+                                    "Voulez-vous enregistrer les modifications ?", QMessageBox.Yes | 
+                                    QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            self.save_options()
+        else:
+            self.load_options()
+            event.accept()
     
     def show_folder_dialog(self):
         folder_dialog = QFileDialog(self)
@@ -88,6 +103,8 @@ class OptionsWindow(QWidget):
             selected_folder = folder_dialog.selectedFiles()[0]
             self.upload_directory_label.setText(selected_folder)
 
+    
+    
     def save_options(self):
         # Get values from input fields
         apiKey = self.apiKey_input.text()
@@ -201,7 +218,7 @@ class OptionsWindow(QWidget):
         msg_box.exec_()
 
     def quit(self):
-        #os.execl(sys.executable, sys.executable, *sys.argv) #Redémarre l'application. Fonctionne mais redémarre trop vite et le port est toujours utilisé lors du nouveau lancement
+        # os.execl(sys.executable, sys.executable, *sys.argv) #Redémarre l'application. Fonctionne mais redémarre trop vite et le port est toujours utilisé lors du nouveau lancement
         sys.exit()
         
 

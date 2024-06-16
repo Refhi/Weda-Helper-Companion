@@ -2,7 +2,7 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
-## [2.0] - 2024-05-20 - Version majeure
+## [1.3] - 2024-05-20 - Version majeure
 - refactoring du code avec ajout d'une interface graphique pour les options
 - ajout d'un autostart sous windows
 - ajout d'une icone en systray
