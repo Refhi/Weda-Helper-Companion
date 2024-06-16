@@ -2,8 +2,11 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
-## [1.3] - 2024-05-20 - Version majeure
-- refactoring du code avec ajout d'une interface graphique pour les options
+## [1.4] - 2024-06-16 - merci https://github.com/Abeldvlpr !
+- ajout du système d'upload vers Weda
+
+## [1.3] - 2024-05-20 - Version majeure - merci https://github.com/Abeldvlpr !
+- refactoring du code avec ajout d'une interface graphique pour les options 
 - ajout d'un autostart sous windows
 - ajout d'une icone en systray
 
