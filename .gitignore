@@ -1,34 +1,8 @@
 /__pycache__
 companion.test.py
-build/*
-build/companion/Analysis-00.toc
-build/companion/base_library.zip
-build/companion/companion.pkg
-build/companion/EXE-00.toc
-build/companion/PKG-00.toc
-build/companion/PYZ-00.pyz
-build/companion/PYZ-00.toc
-build/companion/warn-companion.txt
-build/companion/xref-companion.html
-build/companion/localpycs/pyimod01_archive.pyc
-build/companion/localpycs/pyimod02_importers.pyc
-build/companion/localpycs/pyimod03_ctypes.pyc
-build/companion/localpycs/pyimod04_pywin32.pyc
-build/companion/localpycs/struct.pyc
-dist/images/companion44.png
-dist/images/companion150.png
-dist/images/companion310.png
-dist/images/unnamed.png
-dist/conf.ini
-dist/Weda\ Companion/
-dist/Weda\ Companion.app/
-dist/*
-build/companion/COLLECT-00.toc
-build/companion/companion.exe
+build/
+dist/
 venv/*
 *.sublime-workspace
 *.sublime-project
 gui.spec
-dist/gui.exe
-dist/Weda Companion/Weda Companion.exe
-dist/Weda Companion/Weda Companion.exe

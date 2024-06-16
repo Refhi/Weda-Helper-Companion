@@ -4,7 +4,7 @@ import threading
 import os
 from options import OptionsWindow
 from server import *
-# Version = 1.3
+# Version = 1.4
 
 class MenuItem(object):
     def setupMenu(self, MainWindow, interface):
