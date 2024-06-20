@@ -35,10 +35,10 @@ class OptionsWindow(QWidget):
         form_layout.addWidget(QLabel("Clé API:"), 0,0, alignment=Qt.AlignmentFlag.AlignRight)
         form_layout.addWidget(self.apiKey_input, 0,1)
 
-        form_layout.addWidget(QLabel('<i>A récupérer dans les options de l\'extension de Weda Helper (adresse à copier/coller)</i>'), 1,0,1,2, Qt.AlignmentFlag.AlignCenter)
-        url_label = QLabel("chrome-extension://dbdodecalholckdneehnejnipbgalami/options.html")
-        url_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        form_layout.addWidget(url_label, 2,0,1,2, Qt.AlignmentFlag.AlignCenter)
+        form_layout.addWidget(QLabel('<i>Doit correspondre à la clé API des options de l\'extension, laisser vide pour qu\'elle soit automatiquement récupérée</i>'), 1,0,1,2, Qt.AlignmentFlag.AlignCenter)
+        # url_label = QLabel("chrome-extension://dbdodecalholckdneehnejnipbgalami/options.html")
+        # url_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        # form_layout.addWidget(url_label, 2,0,1,2, Qt.AlignmentFlag.AlignCenter)
         form_layout.addWidget(QLabel(), 3,0)
         form_layout.addWidget(QLabel("Port:"), 4,0, alignment=Qt.AlignmentFlag.AlignRight)
         form_layout.addWidget(self.port_input, 4,1)
@@ -115,10 +115,6 @@ class OptionsWindow(QWidget):
         start_at_boot = self.start_at_boot_checkbox.isChecked()
         upload_directory = self.upload_directory_label.text()
 
-        # Validate input
-        if  not apiKey:
-            self.show_error("La clé API est vide")
-            return
         if  not port.isdigit() or not (1 <= int(port) <= 65535):
             self.show_error("Le port n'est pas valide")
             return
