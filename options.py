@@ -79,7 +79,6 @@ class OptionsWindow(QWidget):
         if settings.value("alreadyLaunched") == None:
             print("First launch")
             self.show()
-            self.first_launch_information()
             settings.setValue("alreadyLaunched", True)
 
     def showEvent(self, event):
@@ -201,25 +200,11 @@ class OptionsWindow(QWidget):
         msg_box = QMessageBox()
         msg_box.setIcon(QMessageBox.Warning)
         msg_box.setText("Information")
-        msg_box.setInformativeText("Vos options ont étés sauvegardées, l'application va quitter pour prendre en compte vos nouvelles options, vous pouvez la relancer par la suite")
+        msg_box.setInformativeText("Vos options ont étés sauvegardées. Redémarrez le Companion pour prendre en compte un changement de port.")
         msg_box.setWindowTitle("Information")
         msg_box.setStandardButtons(QMessageBox.Ok)
-        msg_box.buttonClicked.connect(self.quit)
+        msg_box.buttonClicked.connect(self.hide)
         msg_box.exec_()
-
-    def first_launch_information(self):
-
-        msg_box = QMessageBox()
-        msg_box.setIcon(QMessageBox.Warning)
-        msg_box.setText("Information")
-        msg_box.setInformativeText("Bienvenue dans le Comanion Weda Helper. Afin de fonctionner correctement, vous devez saisir une la clé API qui se trouve dans les options de l'extension")
-        msg_box.setWindowTitle("Information")
-        msg_box.setStandardButtons(QMessageBox.Ok)
-        msg_box.exec_()
-
-    def quit(self):
-        # os.execl(sys.executable, sys.executable, *sys.argv) #Redémarre l'application. Fonctionne mais redémarre trop vite et le port est toujours utilisé lors du nouveau lancement
-        sys.exit()
         
 
 if __name__ == "__main__":
