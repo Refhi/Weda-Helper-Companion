@@ -82,6 +82,10 @@ class OptionsWindow(QWidget):
             self.first_launch_information()
             settings.setValue("alreadyLaunched", True)
 
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.load_options() # Mets à jours les options avant d'afficher la fenêtre
+        
     def closeEvent(self, event):
         reply = QMessageBox.question(self, 'Message',
                                     "Voulez-vous enregistrer les modifications ?", QMessageBox.Yes | 
