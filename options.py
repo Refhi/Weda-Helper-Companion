@@ -26,7 +26,7 @@ class OptionsWindow(QWidget):
         self.start_at_boot_checkbox = QCheckBox("Démarrage automatique au lancement de Windows")
         
         # Create save button
-        self.save_button = QPushButton("Enregistrer")
+        self.save_button = QPushButton("Valider")
         self.save_button.clicked.connect(self.save_options)
         
         # Set up layout
@@ -117,8 +117,8 @@ class OptionsWindow(QWidget):
 
         # Validate input
         if  not apiKey:
-            self.show_error("La clé API est vide")
-            return
+            apiKey = 'auto'
+            QMessageBox.information(self, "Information", "La clé API est vide. Elle sera automatiquement récupérée lors du premier appel de Weda Helper")
         if  not port.isdigit() or not (1 <= int(port) <= 65535):
             self.show_error("Le port n'est pas valide")
             return
@@ -222,8 +222,15 @@ class OptionsWindow(QWidget):
         sys.exit()
         
 
+def resetApp():
+    settings = QSettings("weda", "companion")
+    settings.clear()
+
+
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = OptionsWindow()
-    window.show()
-    sys.exit(app.exec_())
+    # app = QApplication(sys.argv)
+    # window = OptionsWindow()
+    # window.show()
+    # sys.exit(app.exec_())
+    resetApp() # Reset settings for testing
+

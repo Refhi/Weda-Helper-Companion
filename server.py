@@ -53,10 +53,17 @@ class Server(Flask):
          if request.remote_addr != '127.0.0.1':
             abort(403)
          if 'apiKey' not in request.args or request.args.get('apiKey') != self.settings.value("apiKey"):
-            self.add_log('tentat de connexion avec une clé API invalide')
-            abort(jsonify({
-               'error': f'Clé API non fournie ou non conforme. Elle doit être notée dans le fichier conf.ini et dans les options de l\'extension Chrome',
-               }), 403)    
+            cle_api_recue = request.args.get('apiKey')
+            cle_api_attendue = self.settings.value("apiKey")
+            # auto signifie que la première connexion avec une clé API va la sauvegarder
+            if cle_api_attendue == "auto":
+               self.settings.setValue("apiKey", cle_api_recue)
+            else:
+               self.add_log('tentative de connexion sans clé API')
+               self.add_log('tentat de connexion avec une clé API invalide')
+               abort(jsonify({
+                  'error': f'Clé API non fournie ou non conforme. Elle doit être notée dans le fichier conf.ini et dans les options de l\'extension Chrome',
+                  }), 403)    
          if 'versioncheck' not in request.args or request.args.get('versioncheck') != version:
             version_demandee = request.args.get('versioncheck')
             # abort(403)
