@@ -2,6 +2,9 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [1.4.1] - 2024-06-23 - récupération automatique de la clé API
+- la clé API est désormais récupérée automatiquement lors du contact avec Weda Helper, si elle est était restée vide.
+
 ## [1.4] - 2024-06-16 - merci https://github.com/Abeldvlpr !
 - ajout du système d'upload vers Weda
 - fix du getFocusBack (cassé dans la 1.3)
