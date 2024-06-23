@@ -52,11 +52,21 @@ class Server(Flask):
             return
          if request.remote_addr != '127.0.0.1':
             abort(403)
-         if 'apiKey' not in request.args or request.args.get('apiKey') != self.settings.value("apiKey"):
-            self.add_log('tentat de connexion avec une clé API invalide')
+         if 'apiKey' not in request.args:
+            self.add_log('Clé API non fournie')
             abort(jsonify({
-               'error': f'Clé API non fournie ou non conforme. Elle doit être notée dans le fichier conf.ini et dans les options de l\'extension Chrome',
-               }), 403)    
+               'error': 'Erreur dans la requête de l\'extension, la clé API n\'est pas fournie.'
+               }), 403)
+
+         if not self.settings.value("apiKey") and 'apiKey' in request.args:
+            self.add_log('Clé API vide, initialisation avec la clé fournie par l\'extension');
+            self.settings.setValue("apiKey", request.args.get('apiKey'))
+
+         if self.settings.value("apiKey") is not None and request.args.get('apiKey') != self.settings.value("apiKey"):
+            self.add_log('Clé API non valide')
+            abort(jsonify({
+               'error': 'Clé API non conforme. Vérifiez que la clé API des options de l\'extension corresponde à la clé API des options du Companion'
+               }), 403)
          if 'versioncheck' not in request.args or request.args.get('versioncheck') != version:
             version_demandee = request.args.get('versioncheck')
             # abort(403)

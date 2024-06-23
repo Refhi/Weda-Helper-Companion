@@ -35,10 +35,10 @@ class OptionsWindow(QWidget):
         form_layout.addWidget(QLabel("Clé API:"), 0,0, alignment=Qt.AlignmentFlag.AlignRight)
         form_layout.addWidget(self.apiKey_input, 0,1)
 
-        form_layout.addWidget(QLabel('<i>A récupérer dans les options de l\'extension de Weda Helper (adresse à copier/coller)</i>'), 1,0,1,2, Qt.AlignmentFlag.AlignCenter)
-        url_label = QLabel("chrome-extension://dbdodecalholckdneehnejnipbgalami/options.html")
-        url_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
-        form_layout.addWidget(url_label, 2,0,1,2, Qt.AlignmentFlag.AlignCenter)
+        form_layout.addWidget(QLabel('<i>Doit correspondre à la clé API des options de l\'extension, laisser vide pour qu\'elle soit automatiquement récupérée</i>'), 1,0,1,2, Qt.AlignmentFlag.AlignCenter)
+        # url_label = QLabel("chrome-extension://dbdodecalholckdneehnejnipbgalami/options.html")
+        # url_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        # form_layout.addWidget(url_label, 2,0,1,2, Qt.AlignmentFlag.AlignCenter)
         form_layout.addWidget(QLabel(), 3,0)
         form_layout.addWidget(QLabel("Port:"), 4,0, alignment=Qt.AlignmentFlag.AlignRight)
         form_layout.addWidget(self.port_input, 4,1)
@@ -79,9 +79,12 @@ class OptionsWindow(QWidget):
         if settings.value("alreadyLaunched") == None:
             print("First launch")
             self.show()
-            self.first_launch_information()
             settings.setValue("alreadyLaunched", True)
 
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.load_options() # Mets à jours les options avant d'afficher la fenêtre
+        
     def closeEvent(self, event):
         reply = QMessageBox.question(self, 'Message',
                                     "Voulez-vous enregistrer les modifications ?", QMessageBox.Yes | 
@@ -115,10 +118,6 @@ class OptionsWindow(QWidget):
         start_at_boot = self.start_at_boot_checkbox.isChecked()
         upload_directory = self.upload_directory_label.text()
 
-        # Validate input
-        if  not apiKey:
-            self.show_error("La clé API est vide")
-            return
         if  not port.isdigit() or not (1 <= int(port) <= 65535):
             self.show_error("Le port n'est pas valide")
             return
@@ -201,25 +200,11 @@ class OptionsWindow(QWidget):
         msg_box = QMessageBox()
         msg_box.setIcon(QMessageBox.Warning)
         msg_box.setText("Information")
-        msg_box.setInformativeText("Vos options ont étés sauvegardées, l'application va quitter pour prendre en compte vos nouvelles options, vous pouvez la relancer par la suite")
+        msg_box.setInformativeText("Vos options ont étés sauvegardées. Redémarrez le Companion pour prendre en compte un changement de port.")
         msg_box.setWindowTitle("Information")
         msg_box.setStandardButtons(QMessageBox.Ok)
-        msg_box.buttonClicked.connect(self.quit)
+        msg_box.buttonClicked.connect(self.hide)
         msg_box.exec_()
-
-    def first_launch_information(self):
-
-        msg_box = QMessageBox()
-        msg_box.setIcon(QMessageBox.Warning)
-        msg_box.setText("Information")
-        msg_box.setInformativeText("Bienvenue dans le Comanion Weda Helper. Afin de fonctionner correctement, vous devez saisir une la clé API qui se trouve dans les options de l'extension")
-        msg_box.setWindowTitle("Information")
-        msg_box.setStandardButtons(QMessageBox.Ok)
-        msg_box.exec_()
-
-    def quit(self):
-        # os.execl(sys.executable, sys.executable, *sys.argv) #Redémarre l'application. Fonctionne mais redémarre trop vite et le port est toujours utilisé lors du nouveau lancement
-        sys.exit()
         
 
 if __name__ == "__main__":
