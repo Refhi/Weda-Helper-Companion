@@ -2,9 +2,6 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
-## [1.4.1] - 2024-06-22
-- ajout d'une récupération automatique de la clé API si elle est restée vide
-
 ## [1.4] - 2024-06-16 - merci https://github.com/Abeldvlpr !
 - ajout du système d'upload vers Weda
 - fix du getFocusBack (cassé dans la 1.3)
