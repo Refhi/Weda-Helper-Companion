@@ -78,6 +78,12 @@ class OptionsWindow(QWidget):
         settings = QSettings("weda", "companion")
         if settings.value("alreadyLaunched") == None:
             print("First launch")
+
+            settings.setValue("port", "4821") # Valeurs par défaut
+            settings.setValue("iptpe", "192.168.1.35")
+            settings.setValue("port_tpe", "5000")
+            settings.setValue("protocol_tpe", ProtocolTPE.DEFAUT)
+
             self.show()
             settings.setValue("alreadyLaunched", True)
 
@@ -161,14 +167,6 @@ class OptionsWindow(QWidget):
         protocol_tpe = settings.value("protocol_tpe")
         upload_directory = settings.value("upload_directory")
 
-        if port is None:
-            port = "4821" # Valeur par défaut
-        if port_tpe is None:
-            port_tpe = "5000"
-        if iptpe is None:
-            iptpe = "192.168.1.35"
-        if protocol_tpe is None:
-            protocol_tpe = ProtocolTPE.DEFAUT
         if upload_directory is None:
             upload_directory = "Non défini"
         
