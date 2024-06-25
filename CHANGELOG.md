@@ -2,6 +2,9 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [1.4.2] - 2024-06-25
+- correction d'un bug sur le chargement des options par défaut (nécessaitait un redémarrage, ce n'est plus le cas)
+
 ## [1.4.1] - 2024-06-23 - récupération automatique de la clé API
 - la clé API est désormais récupérée automatiquement lors du contact avec Weda Helper, si elle est était restée vide.
 
