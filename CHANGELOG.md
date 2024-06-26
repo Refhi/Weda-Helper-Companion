@@ -2,6 +2,9 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [1.4.3] - 2024-06-26
+- correction d'un bug qui causait un crash au premier lancement
+
 ## [1.4.2] - 2024-06-25
 - correction d'un bug sur le chargement des options par défaut (nécessaitait un redémarrage, ce n'est plus le cas)
 
