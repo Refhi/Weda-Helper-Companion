@@ -71,9 +71,6 @@ class OptionsWindow(QWidget):
         layout.addLayout(form_layout)
         layout.addWidget(self.save_button)
         self.setLayout(layout)
-        
-        # Load saved options
-        self.load_options()
 
         settings = QSettings("weda", "companion")
         if settings.value("alreadyLaunched") == None:
@@ -86,6 +83,9 @@ class OptionsWindow(QWidget):
 
             self.show()
             settings.setValue("alreadyLaunched", True)
+
+        # Load saved options
+        self.load_options()
 
     def showEvent(self, event):
         super().showEvent(event)
