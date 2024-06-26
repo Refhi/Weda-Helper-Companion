@@ -206,7 +206,10 @@ class OptionsWindow(QWidget):
         
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = OptionsWindow()
-    window.show()
-    sys.exit(app.exec_())
+    # app = QApplication(sys.argv)
+    # window = OptionsWindow()
+    # window.show()
+    settings = QSettings("weda", "companion")
+    settings.clear()
+    # sys.exit(app.exec_())
+    
