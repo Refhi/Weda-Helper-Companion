@@ -167,6 +167,14 @@ class OptionsWindow(QWidget):
         protocol_tpe = settings.value("protocol_tpe")
         upload_directory = settings.value("upload_directory")
 
+        if port is None or not isinstance(port, str):
+            port = "4821" # Valeur par défaut
+        if port_tpe is None or not isinstance(port_tpe, str):
+            port_tpe = "5000"
+        if iptpe is None or not isinstance(iptpe, str):
+            iptpe = "192.168.1.35"
+        if protocol_tpe is None or not isinstance(protocol_tpe, int):
+            protocol_tpe = ProtocolTPE.DEFAUT
         if upload_directory is None:
             upload_directory = "Non défini"
         

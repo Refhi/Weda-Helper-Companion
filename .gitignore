@@ -5,3 +5,5 @@ venv/*
 *.sublime-workspace
 *.sublime-project
 gui.spec
+dist/Weda\ Companion/*
+dist/dmg/*
