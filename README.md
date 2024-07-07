@@ -22,3 +22,17 @@ Permet d'activer l'envoi d'instruction au TPE, ainsi que l'impression complète 
 Pour les geek :
 - vous pouvez directement récupérer le companion (gui.py) et l'executer
 - vous pouvez également recompiler vous-même directement le Weda Companion.exe grace au fichier .spec et pyinstaller
+
+## FAQ :
+#### Comment activer la liaison avec le TPE ?
+- sur le TPE le protocole caisse DOIT être activé, en TCP/IP s'il le propose
+- le port de connexion dépend en général du matériel : 5000 pour veriphone, 8888 pour ingenico
+- pour tester le lien, cliquez sur l'icone d'extension "W" dans chrome pour cliquer un bouton appelé "TPE Bis". (Weda-Helper >= 2.5).
+- Si vous avez des difficultés, vous pouvez faire un ping vers l'IP du TPE. Si ça fonctionne en théorie c'est bon signe (dans une console taper ping [l'ip du TPE] puis entrée)
+- normalement le firewall ne gène pas, mais en cas de difficultés vous pouvez TEMPORAIREMENT le desactiver pour tester.
+
+#### Ca ne marche pas, comment je fais ?
+- allez sur http://localhost:4821/ si ça affiche "Bienvenue sur l'API de l'application Companion de Weda-Helper." c'est que le Companion est bien lancé
+- Sinon, re-essayez en changeant le numéro de port, par exemple 4822 (nécessite un redémarrage du Companion)
+- Vous pouvez aussi aller sur http://localhost:4821/log?[cléapi]&versioncheck=1.2 (en remplaçant les crochets et leur contenu par la clé API, et en changeant 4821 par le numéro de port utilisé par le Companion si besoin). Vous y trouverez la liste des requêtes "entendues" par le Companion.
+- vous pouvez ouvrir un ticket d'incident sur https://github.com/Refhi/Weda-Helper-Companion/issues
