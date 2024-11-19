@@ -1,3 +1,17 @@
+"""
+server.py
+
+Il s'agit d'un serveur Flask qui permet à l'extension Chrome Weda-Helper de communiquer avec un terminal de
+paiement électronique (TPE) et de lancer des impressions de documents.
+
+Fonctionnalités principales :
+- Vérification de la compatibilité de la version de l'extension Chrome.
+- Gestion des requêtes API sécurisées avec une clé API.
+- Impression de fichiers PDF.
+- Envoi d'instructions au TPE.
+- Récupération du dernier fichier téléchargé dans un dossier spécifié.
+- Journalisation des requêtes et des événements.
+"""
 
 # companion for Weda-Helper
 # author : refhi

@@ -1,3 +1,18 @@
+"""
+gui.py
+
+Ce fichier configure et affiche l'interface graphique pour l'application Weda-Helper-Companion.
+Il crée une icône dans la barre système avec un menu contextuel permettant d'accéder aux options de l'application et de quitter l'application.
+
+Classes:
+    MenuItem - Configure le menu de la barre système et gère les interactions de base avec l'utilisateur.
+
+Fonctionnalités:
+    - Affichage d'une icône dans la barre système.
+    - Menu contextuel avec des options pour afficher les options de l'application et quitter l'application.
+    - Gestion des clics sur l'icône de la barre système pour afficher la fenêtre des options.
+"""
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
 import threading

@@ -1,3 +1,21 @@
+"""
+options.py
+
+Ce fichier définit la fenêtre des options pour l'application Weda-Helper-Companion.
+Il permet à l'utilisateur de configurer divers paramètres de l'application, tels que la clé API, le port, l'IP du TPE, le port du TPE, le protocole TPE, et le dossier d'upload.
+
+Classes:
+    OptionsWindow - Crée et gère la fenêtre des options de l'application.
+
+Fonctionnalités:
+    - Champs de saisie pour la clé API, le port, l'IP du TPE, le port du TPE, et le protocole TPE.
+    - Sélection d'un dossier d'upload.
+    - Option de démarrage automatique au lancement de Windows.
+    - Bouton pour enregistrer les options.
+    - Chargement et validation des options.
+    - Affichage de messages d'erreur et d'information.
+"""
+
 import sys
 import os
 from PyQt5.QtWidgets import QCheckBox, QApplication, QWidget, QLabel, QLineEdit, QComboBox, QPushButton, QVBoxLayout, QGridLayout, QMessageBox, QFileDialog
