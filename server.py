@@ -101,18 +101,15 @@ class Server(Flask):
             current_window = win32gui.GetForegroundWindow()
             self.add_log(f'current window hook = {current_window}')
             if current_window != self.config["weda_handle"]: #Si la fenêtre actuelle est déjà Weda, on ne fait rien
-               kbd.press(Key.alt)
+               self.add_log(f'current window hook = {current_window}')
                try:
-                  win32gui.SetForegroundWindow(self.config["weda_handle"])
+                     win32gui.ShowWindow(current_window, SW_MINIMIZE)
                except Exception as e:
-                  kbd.release(Key.alt)
-                  self.add_log(f"Erreur lors de la récupération du focus sur la fenêtre de Weda. {e}")
-                  errormessage = f"Erreur lors de la récupération du focus sur la fenêtre de Weda. {e}"
-                  print(errormessage)
-                  return jsonify({'error': errormessage}), 500
-               finally:
-                  kbd.release(Key.alt)            
-                  return jsonify({'info':f'focus vers {self.config["weda_handle"]}'}), 200
+                     self.add_log(f"Erreur lors de la réduction de la fenêtre. {e}")
+                     errormessage = f"Erreur lors de la réduction de la fenêtre. {e}"
+                     print(errormessage)
+                     return jsonify({'error': errormessage}), 500
+               return jsonify({'info': f'fenêtre réduite {current_window}'}), 200
             else:
                self.add_log('focus déjà sur la fenêtre Weda')
         
