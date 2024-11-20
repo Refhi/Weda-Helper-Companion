@@ -10,6 +10,7 @@ Classes:
 Fonctionnalités:
     - Champs de saisie pour la clé API, le port, l'IP du TPE, le port du TPE, et le protocole TPE.
     - Sélection d'un dossier d'upload.
+    - Sélection d'un dossier d'archive.
     - Option de démarrage automatique au lancement de Windows.
     - Bouton pour enregistrer les options.
     - Chargement et validation des options.
@@ -38,9 +39,13 @@ class OptionsWindow(QWidget):
         self.protocol_tpe_input = QComboBox()
         self.protocol_tpe_input.addItems(["Défaut", "Concert V3"]) #Nommer correctement le protocole "Défaut"
         self.choose_upload_directory = QPushButton("Sélectionner un dossier")
-        self.choose_upload_directory.clicked.connect(self.show_folder_dialog)
+        self.choose_upload_directory.clicked.connect(self.show_upload_dialog)
         self.upload_directory_label = QLabel()
         self.upload_directory_label.setAlignment(Qt.AlignCenter)
+        self.choose_archive_directory = QPushButton("Sélectionner un dossier")
+        self.choose_archive_directory.clicked.connect(self.show_archive_dialog)
+        self.archive_directory_label = QLabel()
+        self.archive_directory_label.setAlignment(Qt.AlignCenter)
         self.start_at_boot_checkbox = QCheckBox("Démarrage automatique au lancement de Windows")
         
         # Create save button
@@ -86,6 +91,17 @@ class OptionsWindow(QWidget):
         upload_information_label.setWordWrap(True)
         form_layout.addWidget(upload_information_label, 16,0,1,2)
 
+        #Dossier d'archive
+        form_layout.addWidget(QLabel(), 17,0)
+        form_layout.addWidget(QLabel("Dossier d'archive:"), 18,0, alignment=Qt.AlignmentFlag.AlignRight)
+        form_layout.addWidget(self.choose_archive_directory, 18,1)
+
+        form_layout.addWidget(self.archive_directory_label, 19,0,1,2, Qt.AlignmentFlag.AlignCenter)
+        archive_information_label = QLabel('<i>Dossier où sera archivé le document après l\'upload</i>')
+        archive_information_label.setAlignment(Qt.AlignCenter)
+        archive_information_label.setWordWrap(True)
+        form_layout.addWidget(archive_information_label, 20,0,1,2)
+
         layout.addLayout(form_layout)
         layout.addWidget(self.save_button)
         self.setLayout(layout)
@@ -120,7 +136,7 @@ class OptionsWindow(QWidget):
             self.load_options()
             event.accept()
     
-    def show_folder_dialog(self):
+    def show_upload_dialog(self):
         folder_dialog = QFileDialog(self)
         folder_dialog.setWindowTitle('Sélectionner un dossier')
         folder_dialog.setFileMode(QFileDialog.Directory)
@@ -130,6 +146,15 @@ class OptionsWindow(QWidget):
             selected_folder = folder_dialog.selectedFiles()[0]
             self.upload_directory_label.setText(selected_folder)
 
+    def show_archive_dialog(self):
+        folder_dialog = QFileDialog(self)
+        folder_dialog.setWindowTitle('Sélectionner un dossier')
+        folder_dialog.setFileMode(QFileDialog.Directory)
+        folder_dialog.setOption(QFileDialog.ShowDirsOnly, True)
+        folder_dialog.setOption(QFileDialog.ReadOnly, False)
+        if folder_dialog.exec_() == QFileDialog.Accepted:
+            selected_folder = folder_dialog.selectedFiles()[0]
+            self.archive_directory_label.setText(selected_folder)
     
     
     def save_options(self):
@@ -141,6 +166,7 @@ class OptionsWindow(QWidget):
         protocol_tpe = self.protocol_tpe_input.currentIndex()
         start_at_boot = self.start_at_boot_checkbox.isChecked()
         upload_directory = self.upload_directory_label.text()
+        archive_directory = self.archive_directory_label.text()
 
         if  not port.isdigit() or not (1 <= int(port) <= 65535):
             self.show_error("Le port n'est pas valide")
@@ -153,6 +179,8 @@ class OptionsWindow(QWidget):
             return
         if not upload_directory or upload_directory == "Non défini":
             upload_directory = None
+        if not archive_directory or archive_directory == "Non défini":
+            archive_directory = None
         
 
         # Save options to settings
@@ -163,6 +191,7 @@ class OptionsWindow(QWidget):
         settings.setValue("port_tpe", port_tpe)
         settings.setValue('protocol_tpe', protocol_tpe)
         settings.setValue('upload_directory', upload_directory)
+        settings.setValue('archive_directory', archive_directory)
 
         if os.name == 'nt':
             register_settings = QSettings(RUN_PATH, QSettings.NativeFormat)
@@ -184,6 +213,7 @@ class OptionsWindow(QWidget):
         port_tpe = settings.value("port_tpe")
         protocol_tpe = settings.value("protocol_tpe")
         upload_directory = settings.value("upload_directory")
+        archive_directory = settings.value("archive_directory")
 
         if port is None or not isinstance(port, str):
             port = "4821" # Valeur par défaut
@@ -195,6 +225,9 @@ class OptionsWindow(QWidget):
             protocol_tpe = ProtocolTPE.DEFAUT
         if upload_directory is None:
             upload_directory = "Non défini"
+        if archive_directory is None:
+            archive_directory = "Non défini"
+
         
         # Set values in input fields
         self.apiKey_input.setText(apiKey)
@@ -203,6 +236,7 @@ class OptionsWindow(QWidget):
         self.port_tpe_input.setText(port_tpe)
         self.protocol_tpe_input.setCurrentIndex(int(protocol_tpe))
         self.upload_directory_label.setText(upload_directory)
+        self.archive_directory_label.setText(archive_directory)
 
         if os.name == 'nt':
             register_settings = QSettings(RUN_PATH, QSettings.NativeFormat)

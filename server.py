@@ -231,7 +231,9 @@ class Server(Flask):
          if self.uploaded_file_path == None:
             self.add_log('Pas de fichier uploadé')
             return jsonify({'error':'Pas de fichier uploadé'}), 500
-         archive_folder = self.settings.value('upload_directory') + '/archive'
+         archive_folder = self.settings.value('archive_directory')
+         if archive_folder == None:
+            archive_folder = self.settings.value('upload_directory') + '/archive'
          self.add_log(f'Archivage du fichier {os.path.basename(self.uploaded_file_path)}')
          if not os.path.exists(archive_folder):
             self.add_log(f'Création du dossier d\'archive : {archive_folder}')
