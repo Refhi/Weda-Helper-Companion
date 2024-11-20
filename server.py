@@ -214,8 +214,37 @@ class Server(Flask):
             return jsonify({'error':'Pas de fichier avec une extension autorisée dans le dossier d\'upload'}), 500
 
          file = open(file_path, "rb")
-         fileContent = file.read();
-         return {'fileName': os.path.basename(file_path),'data':base64.b64encode(fileContent).decode('utf-8')},200;
+         fileContent = file.read()
+         self.uploaded_file_path = file_path
+         return {'fileName': os.path.basename(file_path),'data':base64.b64encode(fileContent).decode('utf-8')},200
+    
+      @self.route('/archiveLastUpload', methods=['GET'])
+      def archive_last_upload():
+         print('Archivage du dernier fichier uploadé')
+         # on déplace le dernier fichier uploadé dans un dossier archive, fils du dossier d'upload
+         if self.settings.value('upload_directory') is None:
+            self.add_log('Le dossier d\'upload n\'est pas défini dans les options du Companion')
+            return jsonify({'error':'Le dossier d\'upload n\'est pas défini dans les options du Companion'}), 500
+         if self.uploaded_file_path == None:
+            self.add_log('Pas de fichier uploadé')
+            return jsonify({'error':'Pas de fichier uploadé'}), 500
+         archive_folder = self.settings.value('upload_directory') + '/archive'
+         self.add_log(f'Archivage du fichier {os.path.basename(self.uploaded_file_path)}')
+         if not os.path.exists(archive_folder):
+            self.add_log(f'Création du dossier d\'archive : {archive_folder}')
+            os.makedirs(archive_folder)
+         else:
+            self.add_log(f'Dossier d\'archive existant : {archive_folder}')
+         try:
+            os.rename(self.uploaded_file_path, archive_folder + '/' + os.path.basename(self.uploaded_file_path))
+            self.add_log(f'Fichier archivé : {os.path.basename(self.uploaded_file_path)}')
+            jsonify_info = jsonify({'info':f'Fichier archivé : {os.path.basename(self.uploaded_file_path)}'}), 200
+            self.uploaded_file_path = None
+            return jsonify_info
+         except Exception as e:
+            self.add_log(f'Erreur lors de l\'archivage du fichier : {e}')
+            self.uploaded_file_path = None
+            return jsonify({'error':f'Erreur lors de l\'archivage du fichier : {e}'}), 500
 
       @self.after_request
       def log_request(response):

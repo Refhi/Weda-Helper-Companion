@@ -4,6 +4,7 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 
 ## [1.5] - 2024-11-20
 - ajout du support de sumatraPDF (qui devient recommandé sous windows)
+- ajout du support de l'archivage post-upload (nécessite Weda Helper 2.8)
 
 ## [1.4.3] - 2024-06-26
 - correction d'un bug qui causait un crash au premier lancement

@@ -2,7 +2,7 @@
 
 Companion local app of the extension Weda-Helper
 
-Permet d'activer l'envoi d'instruction au TPE, ainsi que l'impression complète après ctrl+P
+Permet d'activer l'envoi d'instruction au TPE, l'impression complète après ctrl+P, ainsi que l'upload automatique des documents sur Weda avec archivage.
 
 ## Installation:
 ### Windows:
@@ -38,3 +38,6 @@ Pour les geek :
 - Sinon, re-essayez en changeant le numéro de port, par exemple 4822 (nécessite un redémarrage du Companion)
 - Vous pouvez aussi aller sur http://localhost:4821/log?[cléapi]&versioncheck=1.2 (en remplaçant les crochets et leur contenu par la clé API, et en changeant 4821 par le numéro de port utilisé par le Companion si besoin). Vous y trouverez la liste des requêtes "entendues" par le Companion.
 - vous pouvez ouvrir un ticket d'incident sur https://github.com/Refhi/Weda-Helper-Companion/issues
+
+#### Comment "compiler" moi-même le Companion ?
+- pyinstaller.exe '.\companionWin.spec' dans le powershell (nécessite d'avoir pyinstaller installé et toutes les dépendances)
