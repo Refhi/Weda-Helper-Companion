@@ -47,6 +47,9 @@ if isWindows:  # Si le système d'exploitation est Windows
     from pynput.keyboard import Controller
 
 def recoverSumatraPath():
+    if not isWindows:
+      return None
+
     possible_paths = [
         os.path.join(os.getenv('LOCALAPPDATA'), 'SumatraPDF', 'SumatraPDF.exe'),
         os.path.join('C:\\', 'Program Files', 'SumatraPDF', 'SumatraPDF.exe')
