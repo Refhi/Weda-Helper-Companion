@@ -41,9 +41,25 @@ try:
 except ImportError:
    print("pynput can't be loaded, some features will not be available")
 
-if os.name == 'nt':  # Si le système d'exploitation est Windows
-    import win32gui 
+isWindows = os.name == 'nt'
+if isWindows:  # Si le système d'exploitation est Windows
+    import win32gui
     from pynput.keyboard import Controller
+
+def recoverSumatraPath():
+    possible_paths = [
+        os.path.join(os.getenv('LOCALAPPDATA'), 'SumatraPDF', 'SumatraPDF.exe'),
+        os.path.join('C:\\', 'Program Files', 'SumatraPDF', 'SumatraPDF.exe')
+    ]
+    
+    for path in possible_paths:
+        if os.path.exists(path):
+            return path
+    
+    print("SumatraPDF not found. Please install SumatraPDF to enable PDF printing.")
+    return None
+
+sumatraPath = recoverSumatraPath()
 
 class Server(Flask):
     def __init__(self, name):
@@ -73,7 +89,7 @@ class Server(Flask):
                }), 403)
 
          if not self.settings.value("apiKey") and 'apiKey' in request.args:
-            self.add_log('Clé API vide, initialisation avec la clé fournie par l\'extension');
+            self.add_log('Clé API vide, initialisation avec la clé fournie par l\'extension')
             self.settings.setValue("apiKey", request.args.get('apiKey'))
 
          if self.settings.value("apiKey") is not None and request.args.get('apiKey') != self.settings.value("apiKey"):
@@ -97,19 +113,26 @@ class Server(Flask):
 
       @self.route('/focus', methods=['GET'])
       def get_focus_back():
-         if os.name == 'nt':  # Si le système d'exploitation est Windows
+         if sumatraPath is not None:
+            self.add_log('Sumatra détecté, récupération de focus non nécessaire')
+            return
+
+         if isWindows:  # Si le système d'exploitation est Windows
             current_window = win32gui.GetForegroundWindow()
             self.add_log(f'current window hook = {current_window}')
             if current_window != self.config["weda_handle"]: #Si la fenêtre actuelle est déjà Weda, on ne fait rien
-               self.add_log(f'current window hook = {current_window}')
+               kbd.press(Key.alt)
                try:
-                     win32gui.ShowWindow(current_window, SW_MINIMIZE)
+                  win32gui.SetForegroundWindow(self.config["weda_handle"])
                except Exception as e:
-                     self.add_log(f"Erreur lors de la réduction de la fenêtre. {e}")
-                     errormessage = f"Erreur lors de la réduction de la fenêtre. {e}"
-                     print(errormessage)
-                     return jsonify({'error': errormessage}), 500
-               return jsonify({'info': f'fenêtre réduite {current_window}'}), 200
+                  kbd.release(Key.alt)
+                  self.add_log(f"Erreur lors de la récupération du focus sur la fenêtre de Weda. {e}")
+                  errormessage = f"Erreur lors de la récupération du focus sur la fenêtre de Weda. {e}"
+                  print(errormessage)
+                  return jsonify({'error': errormessage}), 500
+               finally:
+                  kbd.release(Key.alt)            
+                  return jsonify({'info':f'focus vers {self.config["weda_handle"]}'}), 200
             else:
                self.add_log('focus déjà sur la fenêtre Weda')
         
@@ -132,7 +155,15 @@ class Server(Flask):
             print(f'temp file name: {temp_file_name}')
 
          # Imprimer le fichier
-         if os.name == 'nt':  # Si le système d'exploitation est Windows
+         if sumatraPath is not None:
+            try:
+               subprocess.run([sumatraPath, "-print-to-default", temp_file_name])
+            except Exception as e:
+               errormessage = "Erreur lors de l'impression du fichier PDF. Vérifiez que vous avez bien SumatraPDF installé."
+               self.add_log(f"{errormessage} {e}")
+               print(errormessage, e)
+               return jsonify({'error': errormessage}), 500
+         elif isWindows:
             try:
                   #pb de vol de focus, cf. https://stackoverflow.com/questions/6312627/windows-7-how-to-bring-a-window-to-the-front-no-matter-what-other-window-has-fo/6324105#6324105
                   self.config["weda_handle"] = win32gui.GetForegroundWindow()

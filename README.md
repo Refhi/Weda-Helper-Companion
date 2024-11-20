@@ -10,8 +10,10 @@ Permet d'activer l'envoi d'instruction au TPE, ainsi que l'impression complète 
 - windows va probablement afficher un message de prudence concernant les risques d'execution d'un programme extérieur. Je vous rassure : le programme a été fait sans aucun virus/malware/etc. Mais n'hésitez pas à passer un coup d'antivirus pour vous rassurer avant d'autoriser l'exception (vous aurez peut-être besoin de cliquer sur "plus de renseignements" sous windows 11)
 - suivre les instructions
 - Le Companion se lance dans la barre système (en bas à droite dans Windows) avec l'icone W
-- Pensez à déclarer Adobe Reader ou équivalent comme logiciel par défaut pour l'impression des PDF
-- Pour le lien avec le TPE, appelez votre fournisseur pour plus de précisions
+- Ensuite :
+-- soit vous installez SumatraPDF (recommandé) https://www.sumatrapdfreader.org/download-free-pdf-viewer (version 64bit Installer) => les impressions sont du coup lancées de façon invisible et plus rapide
+-- soit vous installez et déclarez Adobe Reader ou équivalent comme logiciel par défaut pour l'impression des PDF (attention pose des problèmes de vol de focus, et est un peu plus lent)
+- Pour le lien avec le TPE, appelez votre fournisseur pour plus de précisions (cf. FAQ ci-dessous)
 
 ### Mac:
 - télécharger le fichier .dmg [Télécharger Weda Companion.dmg](https://github.com/Refhi/Weda-Helper-Companion/releases/latest/download/Weda.Companion.dmg)
