@@ -12,7 +12,7 @@ Permet d'activer l'envoi d'instruction au TPE, l'impression complète après ctr
 - Le Companion se lance dans la barre système (en bas à droite dans Windows) avec l'icone W
 - Ensuite :
 -- soit vous installez SumatraPDF (recommandé) https://www.sumatrapdfreader.org/download-free-pdf-viewer (version 64bit Installer) => les impressions sont du coup lancées de façon invisible et plus rapide
--- soit vous installez et déclarez Adobe Reader ou équivalent comme logiciel par défaut pour l'impression des PDF (attention pose des problèmes de vol de focus, et est un peu plus lent)
+-- soit vous installez et déclarez Foxit Reader, Adobe Reader ou équivalent comme logiciel par défaut pour l'impression des PDF (attention pose des problèmes de vol de focus avec Adobe Reader, et est un peu plus lent)
 - Pour le lien avec le TPE, appelez votre fournisseur pour plus de précisions (cf. FAQ ci-dessous)
 
 ### Mac:
