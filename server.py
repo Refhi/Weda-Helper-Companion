@@ -241,6 +241,7 @@ class Server(Flask):
          else:
             self.add_log(f'Dossier d\'archive existant : {archive_folder}')
          try:
+            # on contourne le problème de déplacement de fichier entre disques différents
             destination_path = os.path.join(archive_folder, os.path.basename(self.uploaded_file_path))
             # Copie le fichier
             with open(self.uploaded_file_path, 'rb') as src_file:
