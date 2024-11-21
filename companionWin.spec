@@ -33,5 +33,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file='entitlements.plist',
-    icon=['appIcon.icns'],
+    icon=['Icon.ico'],
 )

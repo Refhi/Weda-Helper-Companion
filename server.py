@@ -67,7 +67,7 @@ sumatraPath = recoverSumatraPath()
 class Server(Flask):
     def __init__(self, name):
       super().__init__(name)
-
+      self.uploaded_file_path = None
       self.settings = QSettings("weda", "companion")
       self.log = ""
       self.config["weda_handle"] = None
@@ -228,11 +228,11 @@ class Server(Flask):
          if self.settings.value('upload_directory') is None:
             self.add_log('Le dossier d\'upload n\'est pas défini dans les options du Companion')
             return jsonify({'error':'Le dossier d\'upload n\'est pas défini dans les options du Companion'}), 500
-         if self.uploaded_file_path == None:
+         if self.uploaded_file_path is None:
             self.add_log('Pas de fichier uploadé')
             return jsonify({'error':'Pas de fichier uploadé'}), 500
          archive_folder = self.settings.value('archive_directory')
-         if archive_folder == None:
+         if archive_folder is None:
             archive_folder = self.settings.value('upload_directory') + '/archive'
          self.add_log(f'Archivage du fichier {os.path.basename(self.uploaded_file_path)}')
          if not os.path.exists(archive_folder):
@@ -241,7 +241,13 @@ class Server(Flask):
          else:
             self.add_log(f'Dossier d\'archive existant : {archive_folder}')
          try:
-            os.rename(self.uploaded_file_path, archive_folder + '/' + os.path.basename(self.uploaded_file_path))
+            destination_path = os.path.join(archive_folder, os.path.basename(self.uploaded_file_path))
+            # Copie le fichier
+            with open(self.uploaded_file_path, 'rb') as src_file:
+                  with open(destination_path, 'wb') as dest_file:
+                     dest_file.write(src_file.read())
+            # Supprime le fichier original
+            os.remove(self.uploaded_file_path)
             self.add_log(f'Fichier archivé : {os.path.basename(self.uploaded_file_path)}')
             jsonify_info = jsonify({'info':f'Fichier archivé : {os.path.basename(self.uploaded_file_path)}'}), 200
             self.uploaded_file_path = None
@@ -250,7 +256,6 @@ class Server(Flask):
             self.add_log(f'Erreur lors de l\'archivage du fichier : {e}')
             self.uploaded_file_path = None
             return jsonify({'error':f'Erreur lors de l\'archivage du fichier : {e}'}), 500
-
       @self.after_request
       def log_request(response):
          timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

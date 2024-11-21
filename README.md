@@ -36,7 +36,7 @@ Pour les geek :
 #### Ca ne marche pas, comment je fais ?
 - allez sur http://localhost:4821/ si ça affiche "Bienvenue sur l'API de l'application Companion de Weda-Helper." c'est que le Companion est bien lancé
 - Sinon, re-essayez en changeant le numéro de port, par exemple 4822 (nécessite un redémarrage du Companion)
-- Vous pouvez aussi aller sur http://localhost:4821/log?[cléapi]&versioncheck=1.2 (en remplaçant les crochets et leur contenu par la clé API, et en changeant 4821 par le numéro de port utilisé par le Companion si besoin). Vous y trouverez la liste des requêtes "entendues" par le Companion.
+- Vous pouvez aussi aller sur http://localhost:4821/log?apiKey=[cléapi]&versioncheck=1.2 (en remplaçant les crochets et leur contenu par la clé API, et en changeant 4821 par le numéro de port utilisé par le Companion si besoin). Vous y trouverez la liste des requêtes "entendues" par le Companion.
 - vous pouvez ouvrir un ticket d'incident sur https://github.com/Refhi/Weda-Helper-Companion/issues
 
 #### Comment "compiler" moi-même le Companion ?
