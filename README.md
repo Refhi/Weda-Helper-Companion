@@ -40,4 +40,9 @@ Pour les geek :
 - vous pouvez ouvrir un ticket d'incident sur https://github.com/Refhi/Weda-Helper-Companion/issues
 
 #### Comment "compiler" moi-même le Companion ?
-- pyinstaller.exe '.\companionWin.spec' dans le powershell (nécessite d'avoir pyinstaller installé et toutes les dépendances)
+(nécessite d'avoir python installé et toutes les dépendances)
+- Sous Windows : pyinstaller.exe '.\companionWin.spec' dans le powershell
+- Sous Mac : pyinstaller '.\companionMac.spec' dans le terminal
+
+#### Multi-utilisateurs geek :
+- si vous utilisez chocolate (https://community.chocolatey.org/) vous pouvez installer SumatraPDF pour tout les utilisateurs via la commande `choco install sumatrapdf.install --ia '/d ""C:\Program Files\SumatraPDF""' `
