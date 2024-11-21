@@ -53,6 +53,7 @@ class OptionsWindow(QWidget):
         # Create save button
         self.save_button = QPushButton("Enregistrer")
         self.save_button.clicked.connect(self.save_options)
+        self.save_button.setDefault(True)
         
         # Set up layout
         layout = QVBoxLayout()
