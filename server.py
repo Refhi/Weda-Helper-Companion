@@ -41,6 +41,7 @@ try:
 except ImportError:
    print("pynput can't be loaded, some features will not be available")
 
+from send2trash import send2trash
 isWindows = os.name == 'nt'
 if isWindows:  # Si le système d'exploitation est Windows
     import win32gui
@@ -228,27 +229,30 @@ class Server(Flask):
          if self.settings.value('upload_directory') is None:
             self.add_log('Le dossier d\'upload n\'est pas défini dans les options du Companion')
             return jsonify({'error':'Le dossier d\'upload n\'est pas défini dans les options du Companion'}), 500
+
          if self.uploaded_file_path is None:
             self.add_log('Pas de fichier uploadé')
             return jsonify({'error':'Pas de fichier uploadé'}), 500
+
          archive_folder = self.settings.value('archive_directory')
          if archive_folder is None:
             archive_folder = self.settings.value('upload_directory') + '/archive'
+            if not os.path.exists(archive_folder):
+               self.add_log(f'Création du dossier d\'archive : {archive_folder}')
+               os.makedirs(archive_folder)
          self.add_log(f'Archivage du fichier {os.path.basename(self.uploaded_file_path)}')
-         if not os.path.exists(archive_folder):
-            self.add_log(f'Création du dossier d\'archive : {archive_folder}')
-            os.makedirs(archive_folder)
-         else:
-            self.add_log(f'Dossier d\'archive existant : {archive_folder}')
          try:
-            # on contourne le problème de déplacement de fichier entre disques différents
-            destination_path = os.path.join(archive_folder, os.path.basename(self.uploaded_file_path))
-            # Copie le fichier
-            with open(self.uploaded_file_path, 'rb') as src_file:
-                  with open(destination_path, 'wb') as dest_file:
-                     dest_file.write(src_file.read())
-            # Supprime le fichier original
-            os.remove(self.uploaded_file_path)
+            if archive_folder == "Corbeille":
+               send2trash(self.uploaded_file_path)
+            else:
+               # on contourne le problème de déplacement de fichier entre disques différents
+               destination_path = os.path.join(archive_folder, os.path.basename(self.uploaded_file_path))
+               # Copie le fichier
+               with open(self.uploaded_file_path, 'rb') as src_file:
+                     with open(destination_path, 'wb') as dest_file:
+                        dest_file.write(src_file.read())
+               # Supprime le fichier original
+               os.remove(self.uploaded_file_path)
             self.add_log(f'Fichier archivé : {os.path.basename(self.uploaded_file_path)}')
             jsonify_info = jsonify({'info':f'Fichier archivé : {os.path.basename(self.uploaded_file_path)}'}), 200
             self.uploaded_file_path = None
