@@ -45,7 +45,35 @@ from send2trash import send2trash
 isWindows = os.name == 'nt'
 if isWindows:  # Si le système d'exploitation est Windows
     import win32gui
+    import win32com.shell.shell as shell
+    import win32com.shell.shellcon as shellcon
     from pynput.keyboard import Controller
+
+def send_to_trash(file_path):
+    try:
+        # Vérifie si le fichier existe
+        if not os.path.exists(file_path):
+            raise Exception("File does not exist")
+
+        # Prépare les paramètres pour SHFileOperation
+        operation = shell.SHFileOperation(
+            (
+                0,
+                shellcon.FO_DELETE,
+                file_path,
+                None,
+                shellcon.FOF_ALLOWUNDO | shellcon.FOF_NOCONFIRMATION,
+                None,
+                None
+            )
+        )
+
+        # Vérifie le résultat de l'opération
+        if operation[1] != 0:
+            raise Exception("Failed to send file to trash")
+    except Exception as e:
+        print(f"Error sending file to trash: {e}")
+
 
 def recoverSumatraPath():
     if not isWindows:
@@ -242,8 +270,12 @@ class Server(Flask):
                os.makedirs(archive_folder)
          self.add_log(f'Archivage du fichier {os.path.basename(self.uploaded_file_path)}')
          try:
-            if archive_folder == "Corbeille":
-               send2trash(self.uploaded_file_path)
+            if archive_folder.lower() == "corbeille":
+               self.add_log(f'Envoi du fichier à la corbeille : {self.uploaded_file_path}')
+               if isWindows:
+                  send_to_trash(self.uploaded_file_path)
+               else:
+                  send2trash(self.uploaded_file_path)
             else:
                # on contourne le problème de déplacement de fichier entre disques différents
                destination_path = os.path.join(archive_folder, os.path.basename(self.uploaded_file_path))
