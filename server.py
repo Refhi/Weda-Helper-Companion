@@ -219,7 +219,7 @@ class Server(Flask):
 
          file = open(file_path, "rb")
          fileContent = file.read()
-         self.uploaded_file_path = file_path
+         self.uploaded_file_path = os.path.normpath(file_path)
          return {'fileName': os.path.basename(file_path),'data':base64.b64encode(fileContent).decode('utf-8')},200
     
       @self.route('/archiveLastUpload', methods=['GET'])
