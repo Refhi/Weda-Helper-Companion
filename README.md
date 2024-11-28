@@ -44,5 +44,10 @@ Pour les geek :
 - Sous Windows : pyinstaller.exe '.\companionWin.spec' dans le powershell
 - Sous Mac : pyinstaller '.\companionMac.spec' dans le terminal
 
+#### Où s'installe le Companion ?
+- le Companion s'exécute (sans installation !) là où l'exe a été placé, en général le dossier de téléchargement.
+- La case "démarrer automatiquement" se contente de rajouter une entrée de registre (merci @abel) qui l'exécute à chaque démarrage.
+- si vous souhaitez supprimer une ancienne version, il suffit de supprimer le fichier exe. Si il se lance toujours et que vous le trouvez pas, regardez dans le gestionnaire de tâches (ctrl+shift+echap) et faites un bouton de droite sur le processus pour trouver le chemin du fichier.
+
 #### Multi-utilisateurs geek :
 - si vous utilisez chocolate (https://community.chocolatey.org/) vous pouvez installer SumatraPDF pour tout les utilisateurs via la commande `choco install sumatrapdf.install --ia '/d ""C:\Program Files\SumatraPDF""' `
