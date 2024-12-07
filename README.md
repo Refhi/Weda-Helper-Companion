@@ -20,6 +20,7 @@ Permet d'activer l'envoi d'instruction au TPE, l'impression complète après ctr
 - copier l'application dans le dossier Applications
 - **lors du premier lancement**: vous devez ouvrir l'application en faisant un clic droit sur l'application puis "Ouvrir". L'application n'étant pas signée, une fenêtre va vous demander de confirmer que vous souhaitez bien ouvrir l'application comme ci-dessous, cliquez alors sur "Ouvrir" à nouveau:
 ![](https://i.ibb.co/zFnXvfB/Capture-d-e-cran-2024-05-28-a-22-08-38-copie.jpg)
+- en cas de blocage : (merci @Oceane) aller dans Réglages systèmes > Confidentialité et sécurité > scroll jusqu'à sécurité > (là il devrait y avoir marqué Weda Companion ne peut pas être ouvert car dev non reconnu blah blah blah) > ouvrir quand même > ouvrir > mettre le mot de passe
 
 Pour les geek :
 - vous pouvez directement récupérer le companion (gui.py) et l'executer
