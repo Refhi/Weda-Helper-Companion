@@ -270,21 +270,14 @@ class Server(Flask):
                os.makedirs(archive_folder)
          self.add_log(f'Archivage du fichier {os.path.basename(self.uploaded_file_path)}')
          try:
-            if archive_folder.lower() == "corbeille":
-               self.add_log(f'Envoi du fichier à la corbeille : {self.uploaded_file_path}')
-               if isWindows:
-                  send_to_trash(self.uploaded_file_path)
-               else:
-                  send2trash(self.uploaded_file_path)
-            else:
-               # on contourne le problème de déplacement de fichier entre disques différents
-               destination_path = os.path.join(archive_folder, os.path.basename(self.uploaded_file_path))
-               # Copie le fichier
-               with open(self.uploaded_file_path, 'rb') as src_file:
-                     with open(destination_path, 'wb') as dest_file:
-                        dest_file.write(src_file.read())
-               # Supprime le fichier original
-               os.remove(self.uploaded_file_path)
+            # on contourne le problème de déplacement de fichier entre disques différents
+            destination_path = os.path.join(archive_folder, os.path.basename(self.uploaded_file_path))
+            # Copie le fichier
+            with open(self.uploaded_file_path, 'rb') as src_file:
+                  with open(destination_path, 'wb') as dest_file:
+                     dest_file.write(src_file.read())
+            # Supprime le fichier original
+            os.remove(self.uploaded_file_path)
             self.add_log(f'Fichier archivé : {os.path.basename(self.uploaded_file_path)}')
             jsonify_info = jsonify({'info':f'Fichier archivé : {os.path.basename(self.uploaded_file_path)}'}), 200
             self.uploaded_file_path = None
@@ -293,6 +286,30 @@ class Server(Flask):
             self.add_log(f'Erreur lors de l\'archivage du fichier : {e}')
             self.uploaded_file_path = None
             return jsonify({'error':f'Erreur lors de l\'archivage du fichier : {e}'}), 500
+
+      @self.route('/trashLastUpload', methods=['GET'])
+      def trash_last_upload():
+         print('Mise à la corbeille du dernier fichier uploadé')
+
+         if self.uploaded_file_path is None:
+            self.add_log('Pas de fichier uploadé')
+            return jsonify({'error':'Pas de fichier uploadé'}), 500
+
+         self.add_log(f'Mise à la corbeille du fichier {os.path.basename(self.uploaded_file_path)}')
+         try:
+            if isWindows:
+               send_to_trash(self.uploaded_file_path)
+            else:
+               send2trash(self.uploaded_file_path)
+            self.add_log(f'Fichier mis à la corbeille : {os.path.basename(self.uploaded_file_path)}')
+            jsonify_info = jsonify({'info':f'Fichier mis à la corbeille : {os.path.basename(self.uploaded_file_path)}'}), 200
+            self.uploaded_file_path = None
+            return jsonify_info
+         except Exception as e:
+            self.add_log(f'Erreur lors de la mise à la corbeille du fichier : {e}')
+            self.uploaded_file_path = None
+            return jsonify({'error':f'Erreur lors de la mise à la corbeille du fichier : {e}'}), 500
+
       @self.after_request
       def log_request(response):
          timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
