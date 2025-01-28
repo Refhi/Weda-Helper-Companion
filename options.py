@@ -46,8 +46,6 @@ class OptionsWindow(QWidget):
         self.choose_archive_directory.clicked.connect(self.show_archive_dialog)
         self.archive_directory_label = QLabel()
         self.archive_directory_label.setAlignment(Qt.AlignCenter)
-        self.archive_trash_button = QPushButton("Archiver dans la Corbeille")
-        self.archive_trash_button.clicked.connect(self.set_archive_trash)
         self.start_at_boot_checkbox = QCheckBox("Démarrage automatique au lancement de Windows")
         
         # Create save button
@@ -97,14 +95,11 @@ class OptionsWindow(QWidget):
         form_layout.addWidget(QLabel("Dossier d'archive:"), 18,0, alignment=Qt.AlignmentFlag.AlignRight)
         form_layout.addWidget(self.choose_archive_directory, 18,1)
 
-        form_layout.addWidget(QLabel(), 19,0)
-        form_layout.addWidget(self.archive_trash_button, 19,1)
-
-        form_layout.addWidget(self.archive_directory_label, 20,0,1,2, Qt.AlignmentFlag.AlignCenter)
+        form_layout.addWidget(self.archive_directory_label, 19,0,1,2, Qt.AlignmentFlag.AlignCenter)
         archive_information_label = QLabel('<i>Dossier où sera archivé le document après l\'upload</i>')
         archive_information_label.setAlignment(Qt.AlignCenter)
         archive_information_label.setWordWrap(True)
-        form_layout.addWidget(archive_information_label, 21,0,1,2)
+        form_layout.addWidget(archive_information_label, 20,0,1,2)
 
         layout.addLayout(form_layout)
         layout.addWidget(self.save_button)
@@ -159,9 +154,6 @@ class OptionsWindow(QWidget):
         if folder_dialog.exec_() == QFileDialog.Accepted:
             selected_folder = folder_dialog.selectedFiles()[0]
             self.archive_directory_label.setText(selected_folder)
-    
-    def set_archive_trash(self):
-        self.archive_directory_label.setText("Corbeille")
 
     def save_options(self):
         # Get values from input fields
@@ -231,7 +223,7 @@ class OptionsWindow(QWidget):
             protocol_tpe = ProtocolTPE.DEFAUT
         if upload_directory is None:
             upload_directory = "Non défini"
-        if archive_directory is None:
+        if archive_directory is None or archive_directory == "Corbeille":
             archive_directory = "Non défini"
 
         
