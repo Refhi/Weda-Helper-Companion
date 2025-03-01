@@ -2,6 +2,9 @@
 
 Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
+## [1.6] - 2025-03-01
+- Ajout de la possibilité de choisir si le fichier importé via ctrl+U doit être supprimé ou archivé
+
 ## [1.5] - 2024-11-20
 - ajout du support de sumatraPDF (qui devient recommandé sous windows)
 - ajout du support de l'archivage post-upload (nécessite Weda Helper 2.8)
