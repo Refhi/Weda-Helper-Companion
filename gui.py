@@ -20,7 +20,7 @@ import os
 from options import OptionsWindow
 from server import *
 global true_version
-true_version = '1.5'
+true_version = '1.6'
 
 class MenuItem(object):
     def setupMenu(self, MainWindow, interface):
